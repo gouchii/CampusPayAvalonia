@@ -1,0 +1,76 @@
+<UserControl
+    d:DesignHeight="500"
+    d:DesignWidth="300"
+    mc:Ignorable="d"
+    x:Class="ClientApp.Views.SignUpView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:FluentAvalonia.UI.Controls"
+    xmlns:viewModels="clr-namespace:ClientApp.ViewModels"
+    xmlns:vm="using:ClientApp.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.DataContext>
+        <vm:SignUpViewModel />
+    </Design.DataContext>
+
+    <StackPanel Margin="20" Spacing="10">
+
+        <Grid ColumnDefinitions="30,*">
+
+            <TextBlock
+                FontSize="24"
+                Grid.Column="1"
+                Margin="60,10,10,10"
+                Text="Sign Up" />
+            <ui:SymbolIcon
+                FontSize="20"
+                Grid.Column="0"
+                Symbol="Back" />
+            <Button
+                Background="Transparent"
+                BorderBrush="Transparent"
+                Click="OnBackClicked"
+                Grid.Column="0"
+                Height="30"
+                Width="30" />
+        </Grid>
+        <Grid
+            Margin="0,10"
+            RowDefinitions="*,*,*,*,*"
+            RowSpacing="30">
+
+            <TextBox
+                Classes.clearButton="true"
+                Grid.Row="1"
+                Name="UserName"
+                Watermark="User Name" />
+            <TextBox
+                Classes.clearButton="true"
+                Grid.Row="2"
+                Name="FullName"
+                Watermark="Full Name" />
+            <TextBox
+                Classes.clearButton="true"
+                Grid.Row="3"
+                Name="Email"
+                Watermark="Email" />
+            <TextBox
+                Classes.revealPasswordButton="true"
+                Grid.Row="4"
+                Name="Password"
+                PasswordChar="*"
+                Watermark="Password" />
+        </Grid>
+        <Grid
+            ColumnDefinitions="*"
+            ColumnSpacing="30"
+            HorizontalAlignment="Center"
+            RowSpacing="30">
+            <Button Content="Sign Up" Width="90">
+                <Button.Classes>accent</Button.Classes>
+            </Button>
+        </Grid>
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,72 @@
+<Window
+    Height="450"
+    Icon="/Assets/avalonia-logo.ico"
+    Title="Campus Pay"
+    Width="800"
+    WindowState="Maximized"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="ClientApp.Views.MainWindow"
+    x:DataType="vm:MainWindowViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:FluentAvalonia.UI.Controls"
+    xmlns:vm="using:ClientApp.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.DataContext>
+        <!--
+            This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs)
+        -->
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Grid>
+        <ui:NavigationView
+            IsBackButtonVisible="True"
+            IsPaneOpen="False"
+            IsSettingsVisible="False"
+            Name="Menu"
+            PaneDisplayMode="LeftCompact"
+            PaneTitle="CampusPay">
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem Content="Home" IconSource="Home" />
+                <ui:NavigationViewItem Content="Log Out" IconSource="Cancel" />
+            </ui:NavigationView.MenuItems>
+            <ui:NavigationView.FooterMenuItems>
+                <ui:NavigationViewItem
+                    Content="Contact"
+                    IconSource="Contact"
+                    Tag="SamplePage4" />
+                <ui:NavigationViewItem
+                    Content="Your Cart"
+                    IconSource="Shop"
+                    Tag="SamplePage5" />
+                <ui:NavigationViewItem
+                    Content="Help"
+                    IconSource="Help"
+                    Tag="SamplePage6" />
+                <ui:NavigationViewItem
+                    Content="Settings"
+                    IconSource="Settings"
+                    Tag="SamplePage6" />
+            </ui:NavigationView.FooterMenuItems>
+            <!--  Main content area  -->
+            <Border
+                Background="Fuchsia"
+                BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                BorderThickness="1">
+                <ui:Frame
+                    MaxHeight="500"
+                    MaxWidth="500"
+                    MinHeight="250"
+                    MinWidth="250"
+                    Name="TestFrame" />
+            </Border>
+        </ui:NavigationView>
+    </Grid>
+
+</Window>

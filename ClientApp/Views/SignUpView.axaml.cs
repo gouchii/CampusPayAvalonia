@@ -19,7 +19,7 @@ public partial class SignUpView : UserControl
 
     private void OnBackClicked(object sender, RoutedEventArgs e)
     {
-        _navigationService.NavigateTo<LoginViewModel>(new SlideNavigationTransitionInfo
+        _navigationService.NavigateTo<LoginViewModel>("AuthFrame",new SlideNavigationTransitionInfo
         {
             Effect = SlideNavigationTransitionEffect.FromRight
         });

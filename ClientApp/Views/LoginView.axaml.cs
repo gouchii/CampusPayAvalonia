@@ -18,7 +18,8 @@ public partial class LoginView : UserControl
 
     private void OnRegistrationClicked(object sender, RoutedEventArgs e)
     {
-        _navigationService.NavigateTo<SignUpViewModel>(new SlideNavigationTransitionInfo
+        _navigationService.NavigateTo<SignUpViewModel>("AuthFrame",
+            new SlideNavigationTransitionInfo
         {
             Effect = SlideNavigationTransitionEffect.FromLeft
         });

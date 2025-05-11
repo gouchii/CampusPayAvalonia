@@ -17,9 +17,8 @@ public partial class AuthWindow : AppWindow
 
         if (this.FindControl<Frame>("AuthFrame") is { } frame)
         {
-            navigationService.SetFrame(frame);
-            frame.NavigationPageFactory = navigationPageFactory;
-            navigationService.NavigateTo<LoginViewModel>();
+            navigationService.RegisterFrame("AuthFrame", AuthFrame);
+            navigationService.NavigateTo<LoginViewModel>("AuthFrame");
         }
     }
 }

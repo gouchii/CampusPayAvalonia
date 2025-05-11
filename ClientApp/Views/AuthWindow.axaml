@@ -23,7 +23,7 @@
     <Design.DataContext>
         <vm:AuthWindowViewModel />
     </Design.DataContext>
-    <Border BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" BorderThickness="1">
+    <Border>
         <ui:Frame
             MaxHeight="500"
             MaxWidth="500"

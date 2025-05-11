@@ -11,14 +11,14 @@ public static class ServicesCollectionExtensions
     public static void AddCommonServices(this IServiceCollection collection)
     {
         // Register ViewModels
-        collection.AddSingleton<MainWindowViewModel>();
-        collection.AddSingleton<AuthWindowViewModel>();
+        collection.AddTransient<MainWindowViewModel>();
+        collection.AddTransient<AuthWindowViewModel>();
         collection.AddTransient<LoginViewModel>();
         collection.AddTransient<SignUpViewModel>();
 
         // Register Views
-        collection.AddSingleton<MainWindow>();
-        collection.AddSingleton<AuthWindow>();
+        collection.AddTransient<MainWindow>();
+        collection.AddTransient<AuthWindow>();
         collection.AddTransient<LoginView>();
         collection.AddTransient<SignUpView>();
 

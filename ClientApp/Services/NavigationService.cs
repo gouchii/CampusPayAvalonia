@@ -27,6 +27,17 @@ public class NavigationService
         _frames[frameName] = frame;
     }
 
+    public void UnregisterFrame(string frameName)
+    {
+        if (_frames.Remove(frameName, out var frame))
+        {
+            // Optionally clear the frame's navigation history to free up memory
+            frame.BackStack.Clear();
+            frame.ForwardStack.Clear();
+            frame.Content = null;  // Detach any current content
+        }
+    }
+
     public void NavigateTo<TViewModel>(string frameName, NavigationTransitionInfo? transitionInfo = null) where TViewModel : class
     {
         if (!_frames.TryGetValue(frameName, out var frame))

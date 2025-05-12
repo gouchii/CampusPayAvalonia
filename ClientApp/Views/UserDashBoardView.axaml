@@ -1,0 +1,56 @@
+<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:Class="ClientApp.Views.UserDashBoardView"
+    x:DataType="vm:UserDashBoardViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:FluentAvalonia.UI.Controls"
+    xmlns:viewModels="clr-namespace:ClientApp.ViewModels"
+    xmlns:vm="using:ClientApp.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.DataContext>
+        <vm:UserDashBoardViewModel />
+    </Design.DataContext>
+    <Grid>
+        <ui:NavigationView
+            IsBackButtonVisible="True"
+            IsPaneOpen="False"
+            IsSettingsVisible="False"
+            Name="Menu"
+            PaneDisplayMode="LeftCompact"
+            PaneTitle="CampusPay">
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem
+                    Content="Home"
+                    IconSource="Home"
+                    Name="Home" />
+                <ui:NavigationViewItem Content="Log Out" IconSource="Cancel" />
+            </ui:NavigationView.MenuItems>
+            <ui:NavigationView.FooterMenuItems>
+                <ui:NavigationViewItem
+                    Content="Contact"
+                    IconSource="Contact"
+                    Tag="SamplePage4" />
+                <ui:NavigationViewItem
+                    Content="Your Cart"
+                    IconSource="Shop"
+                    Tag="SamplePage5" />
+                <ui:NavigationViewItem
+                    Content="Help"
+                    IconSource="Help"
+                    Tag="SamplePage6" />
+                <ui:NavigationViewItem
+                    Content="Settings"
+                    IconSource="Settings"
+                    Tag="SamplePage6" />
+            </ui:NavigationView.FooterMenuItems>
+            <!--  Main content area  -->
+            <Border>
+                <ui:Frame Name="DashBoardFrame" />
+            </Border>
+        </ui:NavigationView>
+    </Grid>
+</UserControl>

@@ -1,7 +1,6 @@
 using ClientApp.Services;
 using ClientApp.ViewModels;
 using ClientApp.Views;
-using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClientApp;
@@ -15,17 +14,22 @@ public static class ServicesCollectionExtensions
         collection.AddTransient<AuthWindowViewModel>();
         collection.AddTransient<LoginViewModel>();
         collection.AddTransient<SignUpViewModel>();
+        collection.AddTransient<HomeViewModel>();
+        collection.AddTransient<UserDashBoardView>();
+
 
         // Register Views
         collection.AddTransient<MainWindow>();
         collection.AddTransient<AuthWindow>();
         collection.AddTransient<LoginView>();
         collection.AddTransient<SignUpView>();
+        collection.AddTransient<HomeView>();
+        collection.AddTransient<UserDashBoardViewModel>();
 
         // Register Services
         collection.AddSingleton<NavigationService>();
         collection.AddSingleton<ViewLocator>();
-        collection.AddSingleton<INavigationPageFactory, NavigationPageFactory>();
         collection.AddSingleton<NavigationPageFactory>();
+        collection.AddSingleton<WindowManagerService>();
     }
 }

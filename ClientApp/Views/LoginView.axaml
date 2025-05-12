@@ -3,6 +3,7 @@
     d:DesignWidth="300"
     mc:Ignorable="d"
     x:Class="ClientApp.Views.LoginView"
+    x:DataType="vm:LoginViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -19,6 +20,7 @@
             FontSize="24"
             Grid.Row="0"
             HorizontalAlignment="Center"
+            Margin="0,10,0,0"
             Text="Login" />
 
         <Grid
@@ -30,14 +32,12 @@
                 Classes.clearButton="true"
                 Grid.Row="1"
                 Name="Email"
-                UseFloatingWatermark="true"
                 Watermark="Email" />
             <TextBox
                 Classes.revealPasswordButton="true"
                 Grid.Row="2"
                 Name="Password"
                 PasswordChar="*"
-                UseFloatingWatermark="true"
                 Watermark="Password" />
             <Grid
                 ColumnDefinitions="*,*"
@@ -47,13 +47,14 @@
                 RowSpacing="30">
 
                 <Button
+                    Command="{Binding LogIn}"
                     Content="Login"
                     Grid.Column="0"
                     Width="90">
                     <Button.Classes>accent</Button.Classes>
                 </Button>
                 <Button
-                    Click="OnRegistrationClicked"
+                    Command="{Binding NavigateToSignIn}"
                     Content="Sign Up"
                     Grid.Column="1"
                     Width="90">

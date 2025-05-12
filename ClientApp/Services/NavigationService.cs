@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Media.Animation;
-using FluentAvalonia.UI.Navigation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClientApp.Services;
@@ -11,8 +10,7 @@ namespace ClientApp.Services;
 public class NavigationService
 {
     private readonly NavigationPageFactory _navigationPageFactory;
-    private readonly Dictionary<string, Frame> _frames = new();
-
+    private readonly Dictionary<Window, Dictionary<string, Frame>> _windowFrames = new();
     private readonly IServiceProvider _serviceProvider;
 
     public NavigationService(IServiceProvider serviceProvider, NavigationPageFactory navigationPageFactory)
@@ -21,34 +19,67 @@ public class NavigationService
         _navigationPageFactory = navigationPageFactory;
     }
 
-    public void RegisterFrame(string frameName, Frame frame)
+    public void RegisterFrame(Window window, Frame frame, string? frameName = null)
     {
+        if (!_windowFrames.TryGetValue(window, out var frames))
+        {
+            frames = new Dictionary<string, Frame>();
+            _windowFrames[window] = frames;
+            window.Closed += (_, _) => UnregisterAllFrames(window);
+        }
+
+        frameName ??= $"Frame_{Guid.NewGuid()}";
         frame.NavigationPageFactory = _navigationPageFactory;
-        _frames[frameName] = frame;
+        frames[frameName] = frame;
+        Console.WriteLine($"Registered frame: {frameName} in window: {window.Title}");
     }
 
-    public void UnregisterFrame(string frameName)
+    public void UnregisterAllFrames(Window window)
     {
-        if (_frames.Remove(frameName, out var frame))
+        if (_windowFrames.TryGetValue(window, out var frames))
         {
-            // Optionally clear the frame's navigation history to free up memory
-            frame.BackStack.Clear();
-            frame.ForwardStack.Clear();
-            frame.Content = null;  // Detach any current content
+            foreach (var (name, frame) in frames)
+            {
+                frame.BackStack.Clear();
+                frame.ForwardStack.Clear();
+                frame.Content = null;
+                Console.WriteLine($"Unregistering frame: {name} from window: {window.Title}");
+            }
+            _windowFrames.Remove(window);
         }
     }
 
-    public void NavigateTo<TViewModel>(string frameName, NavigationTransitionInfo? transitionInfo = null) where TViewModel : class
+    public void UnregisterFrame(Window window, string frameName)
     {
-        if (!_frames.TryGetValue(frameName, out var frame))
-            throw new InvalidOperationException($"No frame registered with the name '{frameName}'");
+        if (_windowFrames.TryGetValue(window, out var frames) && frames.Remove(frameName, out var frame))
+        {
+            frame.BackStack.Clear();
+            frame.ForwardStack.Clear();
+            frame.Content = null;
+        }
+    }
 
+    public void NavigateTo<TViewModel>(Window window, string frameName, NavigationTransitionInfo? transitionInfo = null) where TViewModel : class
+    {
+        if (!_windowFrames.TryGetValue(window, out var frames) || !frames.TryGetValue(frameName, out var frame))
+            throw new InvalidOperationException($"No frame registered with the name '{frameName}' for the given window.");
+
+        var viewModel = ActivatorUtilities.GetServiceOrCreateInstance<TViewModel>(_serviceProvider);
+        Console.WriteLine($"Navigating to {viewModel}, with window : {window} and frame {frameName}");
+        frame.NavigateFromObject(viewModel, new FluentAvalonia.UI.Navigation.FrameNavigationOptions
+        {
+            IsNavigationStackEnabled = true,
+            TransitionInfoOverride = transitionInfo ?? new SuppressNavigationTransitionInfo()
+        });
+    }
+
+    public void NavigateTo<TViewModel>(Frame frame, NavigationTransitionInfo? transitionInfo = null) where TViewModel : class
+    {
         var viewModel = ActivatorUtilities.GetServiceOrCreateInstance<TViewModel>(_serviceProvider);
         frame.NavigateFromObject(viewModel, new FluentAvalonia.UI.Navigation.FrameNavigationOptions
         {
             IsNavigationStackEnabled = true,
             TransitionInfoOverride = transitionInfo ?? new SuppressNavigationTransitionInfo()
         });
-
     }
 }

@@ -10,26 +10,26 @@ public static class ServicesCollectionExtensions
     public static void AddCommonServices(this IServiceCollection collection)
     {
         // Register ViewModels
-        collection.AddTransient<MainWindowViewModel>();
-        collection.AddTransient<AuthWindowViewModel>();
-        collection.AddTransient<LoginViewModel>();
-        collection.AddTransient<SignUpViewModel>();
-        collection.AddTransient<HomeViewModel>();
-        collection.AddTransient<UserDashBoardViewModel>();
-        collection.AddTransient<SettingsViewModel>();
-        collection.AddTransient<ProfileViewModel>();
+        collection.AddScoped<MainWindowViewModel>();
+        collection.AddScoped<AuthWindowViewModel>();
+        collection.AddScoped<LoginViewModel>();
+        collection.AddScoped<SignUpViewModel>();
+        collection.AddScoped<HomeViewModel>();
+        collection.AddScoped<UserDashBoardViewModel>();
+        collection.AddScoped<SettingsViewModel>();
+        collection.AddScoped<ProfileViewModel>();
 
-        // Register Views
-        collection.AddTransient<MainWindow>();
-        collection.AddTransient<AuthWindow>();
-        collection.AddTransient<LoginView>();
-        collection.AddTransient<SignUpView>();
-        collection.AddTransient<HomeView>();
-        collection.AddTransient<UserDashBoardView>();
-        collection.AddTransient<SettingsView>();
-        collection.AddTransient<ProfileView>();
+// Register Views
+        collection.AddScoped<MainWindow>();
+        collection.AddScoped<AuthWindow>();
+        collection.AddScoped<LoginView>();
+        collection.AddScoped<SignUpView>();
+        collection.AddScoped<HomeView>();
+        collection.AddScoped<UserDashBoardView>();
+        collection.AddScoped<SettingsView>();
+        collection.AddScoped<ProfileView>();
 
-        // Register Services
+// Register Services
         collection.AddSingleton<NavigationService>();
         collection.AddSingleton<ViewLocator>();
         collection.AddSingleton<NavigationPageFactory>();

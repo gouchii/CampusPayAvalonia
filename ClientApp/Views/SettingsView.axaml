@@ -1,30 +1,18 @@
-<Window
-    CanResize="False"
-    Height="500"
-    Icon="/Assets/avalonia-logo.ico"
-    MaxHeight="500"
-    MaxWidth="300"
-    Title="CampusPay"
-    Width="380"
-    WindowStartupLocation="CenterScreen"
+<UserControl
     d:DesignHeight="500"
     d:DesignWidth="300"
     mc:Ignorable="d"
-    x:Class="ClientApp.Views.AuthWindow"
-    x:DataType="vm:AuthWindowViewModel"
+    x:Class="ClientApp.Views.SettingsView"
+    x:DataType="vm:SettingsViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="using:FluentAvalonia.UI.Controls"
-    xmlns:views="using:ClientApp.Views"
+    xmlns:viewModels="clr-namespace:ClientApp.ViewModels"
     xmlns:vm="using:ClientApp.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Design.DataContext>
-        <vm:AuthWindowViewModel />
+        <vm:SettingsViewModel />
     </Design.DataContext>
-    <Border>
-        <ui:Frame Name="AuthFrame" />
-    </Border>
-
-</Window>
+</UserControl>

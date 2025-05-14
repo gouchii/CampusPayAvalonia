@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using Avalonia.Threading;
 using ClientApp.Helpers;
 using ClientApp.ViewModels;
 using ClientApp.Views;
@@ -65,7 +67,7 @@ public class WindowManagerService
         if (mainWindow.FindControl<Frame>("MainFrame") is { } mFrame)
         {
             _navigationService.RegisterFrame(mainWindow, mFrame, frameName);
-            _navigationService.NavigateTo<UserDashBoardViewModel>(mainWindow,frameName);
+            _navigationService.NavigateTo<UserDashBoardViewModel>(mainWindow, frameName);
         }
 
         mainWindow.Show();
@@ -81,7 +83,6 @@ public class WindowManagerService
         mainWindow.InitializeComponent();
 
         mainWindow.SplashScreen = new CustomSplashScreen();
-
 
         RegisterWindow(mainWindowName, mainWindow);
 
@@ -102,7 +103,6 @@ public class WindowManagerService
 
         mainWindow.Loaded += async (_, _) =>
         {
-            // Locate the DashBoardFrame after the UserDashBoardView is loaded
             if (mainWindow.MainFrame.Content is UserDashBoardView dashBoardView &&
                 dashBoardView.FindControl<Frame>(userDashBoardFrameName) is { } dashBoardFrame)
             {
@@ -120,7 +120,6 @@ public class WindowManagerService
             var authWindowViewModel = _serviceProvider.GetRequiredService<AuthWindowViewModel>();
             authWindow.DataContext = authWindowViewModel;
             authWindow.InitializeComponent();
-
             RegisterWindow(authWindowName, authWindow);
 
             if (authWindow.FindControl<Frame>(authFrameName) is { } authFrame)

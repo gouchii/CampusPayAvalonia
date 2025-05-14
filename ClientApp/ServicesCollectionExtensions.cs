@@ -15,8 +15,9 @@ public static class ServicesCollectionExtensions
         collection.AddTransient<LoginViewModel>();
         collection.AddTransient<SignUpViewModel>();
         collection.AddTransient<HomeViewModel>();
-        collection.AddTransient<UserDashBoardView>();
-
+        collection.AddTransient<UserDashBoardViewModel>();
+        collection.AddTransient<SettingsViewModel>();
+        collection.AddTransient<ProfileViewModel>();
 
         // Register Views
         collection.AddTransient<MainWindow>();
@@ -24,7 +25,9 @@ public static class ServicesCollectionExtensions
         collection.AddTransient<LoginView>();
         collection.AddTransient<SignUpView>();
         collection.AddTransient<HomeView>();
-        collection.AddTransient<UserDashBoardViewModel>();
+        collection.AddTransient<UserDashBoardView>();
+        collection.AddTransient<SettingsView>();
+        collection.AddTransient<ProfileView>();
 
         // Register Services
         collection.AddSingleton<NavigationService>();

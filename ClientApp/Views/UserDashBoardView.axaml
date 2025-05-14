@@ -21,31 +21,24 @@
             IsSettingsVisible="False"
             Name="Menu"
             PaneDisplayMode="LeftCompact"
-            PaneTitle="CampusPay">
+            PaneTitle="CampusPay"
+            SelectionChanged="OnSelectedItemChanged">
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem
                     Content="Home"
                     IconSource="Home"
-                    Name="Home" />
-                <ui:NavigationViewItem Content="Log Out" IconSource="Cancel" />
+                    Name="Home"
+                    Tag="Home" />
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem
-                    Content="Contact"
+                    Content="Profile"
                     IconSource="Contact"
-                    Tag="SamplePage4" />
-                <ui:NavigationViewItem
-                    Content="Your Cart"
-                    IconSource="Shop"
-                    Tag="SamplePage5" />
-                <ui:NavigationViewItem
-                    Content="Help"
-                    IconSource="Help"
-                    Tag="SamplePage6" />
+                    Tag="Profile" />
                 <ui:NavigationViewItem
                     Content="Settings"
                     IconSource="Settings"
-                    Tag="SamplePage6" />
+                    Tag="Settings" />
             </ui:NavigationView.FooterMenuItems>
             <!--  Main content area  -->
             <Border>

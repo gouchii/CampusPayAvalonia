@@ -73,74 +73,73 @@ public class WindowManagerService
         mainWindow.Show();
     }
 
-    public void OpenMainWindowAuthAsDialog(string mainWindowName = "MainWindow",
-        string mainFrameName = "MainFrame", string authWindowName = "AuthWindow",
-        string authFrameName = "AuthFrame", string userDashBoardFrameName = "DashBoardFrame")
+  public void OpenMainWindowAuthAsDialog(string mainWindowName = "MainWindow",
+    string mainFrameName = "MainFrame", string authWindowName = "AuthWindow",
+    string authFrameName = "AuthFrame", string userDashBoardFrameName = "DashBoardFrame")
+{
+    var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+    var mainWindowViewModel = _serviceProvider.GetRequiredService<MainWindowViewModel>();
+    mainWindow.DataContext = mainWindowViewModel;
+    mainWindow.InitializeComponent();
+
+    mainWindow.SplashScreen = new CustomSplashScreen();
+    RegisterWindow(mainWindowName, mainWindow);
+
+    if (mainWindow.FindControl<Frame>(mainFrameName) is { } mainFrame)
     {
-        var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-        var mainWindowViewModel = _serviceProvider.GetRequiredService<MainWindowViewModel>();
-        mainWindow.DataContext = mainWindowViewModel;
-        mainWindow.InitializeComponent();
+        _navigationService.RegisterFrame(mainWindow, mainFrame, mainFrameName);
+        _navigationService.NavigateTo<UserDashBoardViewModel>(mainWindow, mainFrameName);
+    }
 
-        mainWindow.SplashScreen = new CustomSplashScreen();
+    mainWindow.Show();
 
-        RegisterWindow(mainWindowName, mainWindow);
-
-        if (mainWindow.FindControl<Frame>(mainFrameName) is { } mainFrame)
+    mainWindow.Loaded += async (_, _) =>
+    {
+        // Check if navigation is already done to avoid multiple calls
+        if (mainWindow.MainFrame.Content is not UserDashBoardView)
         {
-            _navigationService.RegisterFrame(mainWindow, mainFrame, mainFrameName);
-            _navigationService.NavigateTo<UserDashBoardViewModel>(mainWindow, mainFrameName);
+            return;
         }
 
-        var userDashBoardView = _serviceProvider.GetRequiredService<UserDashBoardView>();
-        var userDashBoardViewModel = _serviceProvider.GetRequiredService<UserDashBoardViewModel>();
-        userDashBoardView.DataContext = userDashBoardViewModel;
-        userDashBoardView.InitializeComponent();
-
-
-
-        mainWindow.Show();
-
-        mainWindow.Loaded += async (_, _) =>
+        if (mainWindow.MainFrame.Content is UserDashBoardView dashBoardView &&
+            dashBoardView.FindControl<Frame>(userDashBoardFrameName) is { } dashBoardFrame)
         {
-            if (mainWindow.MainFrame.Content is UserDashBoardView dashBoardView &&
-                dashBoardView.FindControl<Frame>(userDashBoardFrameName) is { } dashBoardFrame)
-            {
-                _navigationService.RegisterFrame(mainWindow, dashBoardFrame, userDashBoardFrameName);
-                _navigationService.NavigateTo<HomeViewModel>(mainWindow, userDashBoardFrameName);
-            }
+            _navigationService.RegisterFrame(mainWindow, dashBoardFrame, userDashBoardFrameName);
+            _navigationService.NavigateTo<HomeViewModel>(mainWindow, userDashBoardFrameName);
+        }
 
-            await Task.Delay(900);
+        await Task.Delay(900);
 
-            mainWindow.Effect = new BlurEffect
-            {
-                Radius = 10
-            };
-            var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
-            var authWindowViewModel = _serviceProvider.GetRequiredService<AuthWindowViewModel>();
-            authWindow.DataContext = authWindowViewModel;
-            authWindow.InitializeComponent();
-            RegisterWindow(authWindowName, authWindow);
-
-            if (authWindow.FindControl<Frame>(authFrameName) is { } authFrame)
-            {
-                _navigationService.RegisterFrame(authWindow, authFrame, authFrameName);
-                _navigationService.NavigateTo<LoginViewModel>(authWindow, authFrameName);
-            }
-
-            var result = await authWindow.ShowDialog<bool>(mainWindow);
-
-
-            if (!result)
-            {
-                mainWindow.Close();
-            }
-            else
-            {
-                mainWindow.Effect = null;
-            }
+        mainWindow.Effect = new BlurEffect
+        {
+            Radius = 10
         };
-    }
+
+        var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
+        var authWindowViewModel = _serviceProvider.GetRequiredService<AuthWindowViewModel>();
+        authWindow.DataContext = authWindowViewModel;
+        authWindow.InitializeComponent();
+        RegisterWindow(authWindowName, authWindow);
+
+        if (authWindow.FindControl<Frame>(authFrameName) is { } authFrame)
+        {
+            _navigationService.RegisterFrame(authWindow, authFrame, authFrameName);
+            _navigationService.NavigateTo<LoginViewModel>(authWindow, authFrameName);
+        }
+
+        var result = await authWindow.ShowDialog<bool>(mainWindow);
+
+        if (!result)
+        {
+            mainWindow.Close();
+        }
+        else
+        {
+            mainWindow.Effect = null;
+        }
+    };
+}
+
 
 
     public void OpenAuthWindow(string windowName = "AuthWindow", string frameName = "AuthFrame")

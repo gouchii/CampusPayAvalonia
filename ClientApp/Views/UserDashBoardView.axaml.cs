@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -14,6 +15,7 @@ public partial class UserDashBoardView : UserControl
         _viewModel = viewModel;
         DataContext = viewModel;
         InitializeComponent();
+        Console.WriteLine("DashBoard Viewable");
         Menu.SelectedItem = Home;
     }
 

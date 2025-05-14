@@ -18,7 +18,7 @@
         <ui:NavigationView
             IsBackButtonVisible="True"
             IsPaneOpen="False"
-            IsSettingsVisible="False"
+            IsSettingsVisible="True"
             Name="Menu"
             PaneDisplayMode="LeftCompact"
             PaneTitle="CampusPay"
@@ -35,10 +35,6 @@
                     Content="Profile"
                     IconSource="Contact"
                     Tag="Profile" />
-                <ui:NavigationViewItem
-                    Content="Settings"
-                    IconSource="Settings"
-                    Tag="Settings" />
             </ui:NavigationView.FooterMenuItems>
             <!--  Main content area  -->
             <Border>

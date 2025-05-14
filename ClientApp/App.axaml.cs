@@ -24,9 +24,10 @@ public partial class App : Application
         var windowManager = services.GetRequiredService<WindowManagerService>();
         DisableAvaloniaDataAnnotationValidation();
 
-        windowManager.OpenMainWindowAuthAsDialog();
+        // windowManager.OpenMainWindowAuthAsDialog();
 
         base.OnFrameworkInitializationCompleted();
+        windowManager.OpenMainWindowAuthAsDialog();
     }
 
     private void DisableAvaloniaDataAnnotationValidation()

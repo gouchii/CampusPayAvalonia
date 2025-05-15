@@ -18,6 +18,7 @@ public static class ServicesCollectionExtensions
         collection.AddScoped<UserDashBoardViewModel>();
         collection.AddScoped<SettingsViewModel>();
         collection.AddScoped<ProfileViewModel>();
+        collection.AddTransient<LoadingOverlayViewModel>();
 
 // Register Views
         collection.AddScoped<MainWindow>();
@@ -28,6 +29,7 @@ public static class ServicesCollectionExtensions
         collection.AddScoped<UserDashBoardView>();
         collection.AddScoped<SettingsView>();
         collection.AddScoped<ProfileView>();
+        collection.AddTransient<LoadingOverlayView>();
 
 // Register Services
         collection.AddSingleton<NavigationService>();

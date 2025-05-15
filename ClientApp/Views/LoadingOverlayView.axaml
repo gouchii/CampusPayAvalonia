@@ -1,0 +1,28 @@
+<UserControl
+    x:Class="ClientApp.Views.LoadingOverlayView"
+    x:DataType="vm:LoadingOverlayViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:FluentAvalonia.UI.Controls"
+    xmlns:viewModels="clr-namespace:ClientApp.ViewModels"
+    xmlns:vm="using:ClientApp.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Border
+        Background="Transparent"
+        HorizontalAlignment="Stretch"
+        IsHitTestVisible="{Binding IsHitTestVisible}"
+        VerticalAlignment="Stretch">
+
+        <Grid Background="#AA000000" Opacity="{Binding OpacityValue}">
+            <ui:ProgressRing
+                Height="80"
+                HorizontalAlignment="Center"
+                IsIndeterminate="True"
+                IsVisible="{Binding IsVisible}"
+                VerticalAlignment="Center"
+                Width="80" />
+        </Grid>
+    </Border>
+</UserControl>

@@ -5,63 +5,70 @@
     x:Class="ClientApp.Views.LoginView"
     x:DataType="vm:LoginViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:controls="clr-namespace:ClientApp.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="using:FluentAvalonia.UI.Controls"
     xmlns:viewModels="clr-namespace:ClientApp.ViewModels"
     xmlns:vm="using:ClientApp.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
     <Design.DataContext>
         <vm:LoginViewModel />
     </Design.DataContext>
 
-    <StackPanel Margin="20" Spacing="10">
-        <TextBlock
-            FontSize="24"
-            Grid.Row="0"
-            HorizontalAlignment="Center"
-            Margin="0,10,0,0"
-            Text="Login" />
-
-        <Grid
-            Margin="0,70"
-            RowDefinitions="*,*,*,*"
-            RowSpacing="30">
-
-            <TextBox
-                Classes.clearButton="true"
-                Grid.Row="1"
-                Name="Email"
-                Watermark="Email" />
-            <TextBox
-                Classes.revealPasswordButton="true"
-                Grid.Row="2"
-                Name="Password"
-                PasswordChar="*"
-                Watermark="Password" />
-            <Grid
-                ColumnDefinitions="*,*"
-                ColumnSpacing="30"
-                Grid.Row="3"
+    <Grid>
+        <StackPanel Margin="20" Spacing="10">
+            <TextBlock
+                FontSize="24"
                 HorizontalAlignment="Center"
+                Margin="0,10,0,0"
+                Text="Login" />
+
+            <Grid
+                Margin="0,70"
+                RowDefinitions="*,*,*,*"
                 RowSpacing="30">
+                <TextBox
+                    Classes.clearButton="true"
+                    Grid.Row="1"
+                    Name="Email"
+                    Watermark="Email" />
 
-                <Button
-                    Command="{Binding LogIn}"
-                    Content="Login"
-                    Grid.Column="0"
-                    Width="90">
-                    <Button.Classes>accent</Button.Classes>
-                </Button>
-                <Button
-                    Command="{Binding NavigateToSignIn}"
-                    Content="Sign Up"
-                    Grid.Column="1"
-                    Width="90">
-                    <Button.Classes>accent</Button.Classes>
-                </Button>
+                <TextBox
+                    Classes.revealPasswordButton="true"
+                    Grid.Row="2"
+                    Name="Password"
+                    PasswordChar="*"
+                    Watermark="Password" />
+
+                <Grid
+                    ColumnDefinitions="*,*"
+                    ColumnSpacing="30"
+                    Grid.Row="3"
+                    HorizontalAlignment="Center"
+                    RowSpacing="30">
+
+                    <Button
+                        Command="{Binding LogIn}"
+                        Content="Login"
+                        Grid.Column="0"
+                        Width="90">
+                        <Button.Classes>accent</Button.Classes>
+                    </Button>
+
+                    <Button
+                        Command="{Binding NavigateToSignIn}"
+                        Content="Sign Up"
+                        Grid.Column="1"
+                        Width="90">
+                        <Button.Classes>accent</Button.Classes>
+                    </Button>
+                </Grid>
             </Grid>
-        </Grid>
+        </StackPanel>
 
-    </StackPanel>
+        <!--  Loading Overlay  -->
+        <controls:LoadingOverlayView DataContext="{Binding LoadingOverlay}" />
+    </Grid>
 </UserControl>

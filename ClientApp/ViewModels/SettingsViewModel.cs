@@ -4,11 +4,25 @@ using Avalonia;
 using Avalonia.Media;
 using Avalonia.Styling;
 using FluentAvalonia.Styling;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClientApp.ViewModels;
 
-public class SettingsViewModel : ViewModelBase
+public partial class SettingsViewModel : ViewModelBase
 {
+    private readonly FluentAvaloniaTheme? _faTheme;
+
+    [ObservableProperty]
+    private bool _useCustomAccent;
+
+    [ObservableProperty]
+    private Color _customAccentColor = Colors.SlateBlue;
+
+    [ObservableProperty]
+    private string _currentAppTheme = _system;
+
+    [ObservableProperty]
+    private Color? _listBoxColor;
 
     public SettingsViewModel()
     {
@@ -18,121 +32,69 @@ public class SettingsViewModel : ViewModelBase
     }
 
 
-    public bool UseCustomAccent
-    {
-        get => _useCustomAccentColor;
-        set
-        {
-            if (RaiseAndSetIfChanged(ref _useCustomAccentColor, value))
-            {
-                if (value)
-                {
-                    if (_faTheme.TryGetResource("SystemAccentColor", null, out var curColor))
-                    {
-                        Console.WriteLine($"Tried to change the accent color to {_customAccentColor}");
-                        _customAccentColor = (Color)curColor;
-                        _listBoxColor = _customAccentColor;
-
-                        RaisePropertyChanged(nameof(CustomAccentColor));
-                        RaisePropertyChanged(nameof(ListBoxColor));
-                    }
-                    else
-                    {
-                        // This should never happen, if it does, something bad has happened
-                        throw new Exception("Unable to retreive SystemAccentColor");
-                    }
-                }
-                else
-                {
-                    // Restore system color
-                    _customAccentColor = default;
-                    _listBoxColor = default;
-                    RaisePropertyChanged(nameof(CustomAccentColor));
-                    RaisePropertyChanged(nameof(ListBoxColor));
-                    UpdateAppAccentColor(null);
-                }
-            }
-        }
-    }
-
-    public Color? ListBoxColor
-    {
-        get => _listBoxColor;
-        set
-        {
-            RaiseAndSetIfChanged(ref _listBoxColor, (Color)value!);
-
-            _customAccentColor = value.Value;
-            RaisePropertyChanged(nameof(CustomAccentColor));
-
-            UpdateAppAccentColor(value.Value);
-        }
-    }
-
-    public Color CustomAccentColor
-    {
-        get => _customAccentColor;
-        set
-        {
-            if (RaiseAndSetIfChanged(ref _customAccentColor, value))
-            {
-                _listBoxColor = value;
-                RaisePropertyChanged(nameof(ListBoxColor));
-                UpdateAppAccentColor(value);
-            }
-        }
-    }
-
     public List<Color> PredefinedColors { get; private set; }
 
-public string? CurrentVersion =>
-typeof(FluentAvalonia.UI.Controls.NavigationView).Assembly.GetName().Version?.ToString();
+    public string? CurrentVersion =>
+        typeof(FluentAvalonia.UI.Controls.NavigationView).Assembly.GetName().Version?.ToString();
 
-public string CurrentAvaloniaVersion
-{
-    get
+    public string CurrentAvaloniaVersion =>
+        typeof(Application).Assembly.GetName().Version?.ToString() ?? throw new InvalidOperationException();
+
+    public string[] AppThemes { get; } =
+        new[] { _system, _light , _dark };
+
+    partial void OnUseCustomAccentChanged(bool value)
     {
-        var currentAvaloniaVersion = typeof(Application).Assembly.GetName().Version?.ToString() ?? throw new InvalidOperationException();
-        return currentAvaloniaVersion;
-    }
-}
-public string CurrentAppTheme
-{
-    get => _currentAppTheme;
-    set
-    {
-        if (RaiseAndSetIfChanged(ref _currentAppTheme, value))
+
+        if (value)
         {
-            var newTheme = GetThemeVariant(value);
-            if (newTheme != null)
+            if (_faTheme != null && _faTheme.TryGetResource("SystemAccentColor", null, out var curColor))
             {
-                if (Application.Current != null) Application.Current.RequestedThemeVariant = newTheme;
-            }
-            if (value != _system)
-            {
-                if (_faTheme != null) _faTheme.PreferSystemTheme = false;
+                Console.WriteLine($"Tried to change the accent color to {CustomAccentColor}");
+                CustomAccentColor = (Color)curColor;
+                ListBoxColor = CustomAccentColor;
             }
             else
             {
-                if (_faTheme != null) _faTheme.PreferSystemTheme = true;
+                throw new Exception("Unable to retrieve SystemAccentColor");
             }
         }
-    }
-}
-
-private ThemeVariant? GetThemeVariant(string value)
-    {
-        switch (value)
+        else
         {
-            case _light:
-                return ThemeVariant.Light;
-            case _dark:
-                return ThemeVariant.Dark;
-            case _system:
-            default:
-                return null;
+            CustomAccentColor = default;
+            ListBoxColor = default;
+            UpdateAppAccentColor(null);
         }
     }
+
+    partial void OnListBoxColorChanged(Color? value)
+    {
+        CustomAccentColor = value ?? default;
+        UpdateAppAccentColor(CustomAccentColor);
+    }
+    partial void OnCustomAccentColorChanged(Color value)
+    {
+        ListBoxColor = value;
+        UpdateAppAccentColor(value);
+    }
+
+    partial void OnCurrentAppThemeChanged(string value)
+    {
+        var newTheme = GetThemeVariant(value);
+        if (newTheme != null)
+        {
+            Application.Current!.RequestedThemeVariant = newTheme;
+        }
+        if (_faTheme != null) _faTheme.PreferSystemTheme = (value == _system);
+    }
+
+    private ThemeVariant? GetThemeVariant(string value) => value switch
+    {
+        _light => ThemeVariant.Light,
+        _dark => ThemeVariant.Dark,
+        _system => null,
+        _ => null,
+    };
 
     private void GetPredefColors()
     {
@@ -188,22 +150,14 @@ private ThemeVariant? GetThemeVariant(string value)
             Color.FromRgb(126,115,95)
         };
     }
+
     private void UpdateAppAccentColor(Color? color)
     {
         Console.WriteLine($"{_faTheme} set the accent color to {color}");
         if (_faTheme != null) _faTheme.CustomAccentColor = color;
     }
-    public string[] AppThemes { get; } =
-        new[] { _system, _light , _dark /*, FluentAvaloniaTheme.HighContrastTheme*/ };
-
-    private bool _useCustomAccentColor;
-    private Color _customAccentColor = Colors.SlateBlue;
-    private string _currentAppTheme = _system;
-    private FlowDirection _currentFlowDirection;
-    private Color? _listBoxColor;
 
     private const string _system = "System";
     private const string _dark = "Dark";
     private const string _light = "Light";
-    private readonly FluentAvaloniaTheme? _faTheme;
 }

@@ -13,6 +13,7 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -24,10 +25,10 @@ public partial class App : Application
         var windowManager = services.GetRequiredService<WindowManagerService>();
         DisableAvaloniaDataAnnotationValidation();
 
-        // windowManager.OpenMainWindowAuthAsDialog();
+        windowManager.OpenMainWindowAuthAsDialog();
 
         base.OnFrameworkInitializationCompleted();
-        windowManager.OpenMainWindowAuthAsDialog();
+
     }
 
     private void DisableAvaloniaDataAnnotationValidation()

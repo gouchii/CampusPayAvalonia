@@ -1,14 +1,16 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FlashCap;
+using SkiaSharp;
+using ZXing;
+using ZXing.Common;
+using ZXing.SkiaSharp;
 
 namespace ClientApp.ViewModels;
 
@@ -21,7 +23,7 @@ public partial class QrScannerWindowViewModel : ObservableObject
     private int _nFrameCount;
 
     [ObservableProperty]
-    private Bitmap? _cameraFrame;
+    private SKBitmap? _cameraFrame;
 
     [ObservableProperty]
     private ObservableCollection<CaptureDeviceDescriptor> _deviceList = new();
@@ -43,6 +45,9 @@ public partial class QrScannerWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private string _frameCount = "Frames Captured: 0";
+
+    [ObservableProperty]
+    private string _qrCodeText = "No QR code detected";
 
     public QrScannerWindowViewModel()
     {
@@ -113,7 +118,6 @@ public partial class QrScannerWindowViewModel : ObservableObject
 
         try
         {
-            // Remove cancellation token if OpenAsync doesn't accept it
             _captureDevice = await SelectedDevice.OpenAsync(SelectedCharacteristics, OnFrameReceivedAsync);
             _ = _captureDevice.StartAsync();
             Console.WriteLine("Camera capture started.");
@@ -159,21 +163,41 @@ public partial class QrScannerWindowViewModel : ObservableObject
         CameraFrame = null;
     }
 
-    private async Task OnFrameReceivedAsync(PixelBufferScope bufferScope)
+    private void OnFrameReceivedAsync(PixelBufferScope bufferScope)
     {
-        Console.WriteLine("Frame received");
-
         try
         {
-            var imageBytes = bufferScope.Buffer.ExtractImage();
-            await using var ms = new MemoryStream(imageBytes);
-            var bitmap = new Bitmap(ms);
+            var imageBytes = bufferScope.Buffer.ReferImage();
+            // await using var ms = new MemoryStream(imageBytes);
+            // var bitmap = new Bitmap(ms);
 
-            // Update UI on main thread
+            var skBitmap = SKBitmap.Decode(imageBytes);
+            // Decode QR code
+            var reader = new BarcodeReader
+            {
+                AutoRotate = true,
+                Options = new DecodingOptions
+                {
+                    TryHarder = true,
+                    PossibleFormats = new[] { BarcodeFormat.QR_CODE }
+                }
+            };
+
+            var result = reader.Decode(skBitmap);
+            if (result != null)
+            {
+                QrCodeText = $"QR Code: {result.Text}";
+                Console.WriteLine($"QR Code detected: {result.Text}");
+            }
+            else
+            {
+                QrCodeText = "No QR code detected";
+            }
+
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
-                CameraFrame = bitmap;
-                FrameResolution = $"Resolution: {bitmap.Size.Width}x{bitmap.Size.Height}";
+                CameraFrame = skBitmap;
+                FrameResolution = $"Resolution: {skBitmap.Width}x{skBitmap.Width}";
                 _nFrameCount++;
                 FrameCount = $"Frames Captured: {_nFrameCount}";
 
@@ -193,6 +217,7 @@ public partial class QrScannerWindowViewModel : ObservableObject
             bufferScope.ReleaseNow();
         }
     }
-
-
 }
+
+
+

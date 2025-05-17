@@ -18,7 +18,7 @@ public partial class HomeView : UserControl
         DataContext = viewModel;
 
         InitializeComponent();
-        PopulateRectangles(150);
+        // PopulateRectangles(150);
     }
 
 
@@ -76,7 +76,7 @@ public partial class HomeView : UserControl
                 Margin = new Thickness( 40)
             };
 
-            RectanglePanel.Children.Add(rectangle);
+            // RectanglePanel.Children.Add(rectangle);
         }
     }
 }

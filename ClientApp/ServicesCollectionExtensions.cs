@@ -19,6 +19,7 @@ public static class ServicesCollectionExtensions
         collection.AddScoped<SettingsViewModel>();
         collection.AddScoped<ProfileViewModel>();
         collection.AddTransient<LoadingOverlayViewModel>();
+        collection.AddTransient<QrScannerWindowViewModel>();
 
 // Register Views
         collection.AddScoped<MainWindow>();
@@ -30,6 +31,7 @@ public static class ServicesCollectionExtensions
         collection.AddScoped<SettingsView>();
         collection.AddScoped<ProfileView>();
         collection.AddTransient<LoadingOverlayView>();
+        collection.AddTransient<QrScannerWindow>();
 
 // Register Services
         collection.AddSingleton<NavigationService>();

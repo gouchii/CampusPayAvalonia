@@ -159,5 +159,22 @@ public class WindowManagerService
         authWindow.Show();
     }
 
+    public async Task OpenQrWindowAsDialog(string windowName = "QrWindow")
+    {
+        var qrScannerWindow = _serviceProvider.GetRequiredService<QrScannerWindow>();
+        var qrScannerWindowViewModel = _serviceProvider.GetRequiredService<QrScannerWindowViewModel>();
+        qrScannerWindow.DataContext = qrScannerWindowViewModel;
+        qrScannerWindow.InitializeComponent();
+        RegisterWindow(windowName, qrScannerWindow);
+        var currentWindow = CurrentWindow.Get();
+        if (currentWindow != null) await qrScannerWindow.ShowDialog(currentWindow);
+        // await qrScannerWindowViewModel.StartCaptureAsync();
+        Console.WriteLine("Starting CameraFeed");
+        qrScannerWindow.Closing += (_, _) =>
+        {
+            _ = qrScannerWindowViewModel.StopCaptureAsync();
+            Console.WriteLine("Stopping CameraFeed");
+        };
+    }
 
 }

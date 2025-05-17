@@ -6,6 +6,7 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,8 +28,12 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+        <PackageReference Include="FlashCap" Version="1.11.0" />
         <PackageReference Include="FluentAvaloniaUI" Version="2.3.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
+        <PackageReference Include="SkiaImageView.Avalonia11" Version="1.5.0" />
+        <PackageReference Include="ZXing.Net" Version="0.16.10" />
+        <PackageReference Include="ZXing.Net.Bindings.SkiaSharp" Version="0.16.21" />
     </ItemGroup>
 
 </Project>

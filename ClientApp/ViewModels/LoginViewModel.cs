@@ -45,11 +45,11 @@ public partial class LoginViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public async Task LogIn()
+    public void LogIn()
     {
-        LoadingOverlay.ShowLoadingOverlay(true);
-        await Task.Delay(2000);
-        LoadingOverlay.ShowLoadingOverlay(false);
+        // LoadingOverlay.ShowLoadingOverlay(true);
+        // await Task.Delay(2000);
+        // LoadingOverlay.ShowLoadingOverlay(false);
         _windowManagerService.CloseWindow("AuthWindow", true);
         // _windowManagerService.OpenMainWindow();
         // _windowManagerService.CloseWindow("AuthWindow");

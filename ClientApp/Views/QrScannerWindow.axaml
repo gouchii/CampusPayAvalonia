@@ -1,5 +1,8 @@
 <Window
+    CanResize="False"
+    Height="480"
     Title="QrScannerView"
+    Width="640"
     WindowStartupLocation="CenterScreen"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -14,7 +17,25 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Grid Background="Black">
-        <siv:SKImageView Source="{Binding CameraFrame}" Stretch="Uniform" />
+        <siv:SKImageView Source="{Binding CameraFrame}" Stretch="UniformToFill" />
+
+        <!--  Overlay for QR Scanner Guide  -->
+        <!--  <Border  -->
+        <!--  BorderBrush="{DynamicResource SystemAccentColor}"  -->
+        <!--  BorderThickness="4"  -->
+        <!--  CornerRadius="10"  -->
+        <!--  Height="300"  -->
+        <!--  HorizontalAlignment="Center"  -->
+        <!--  Opacity="0.7"  -->
+        <!--  VerticalAlignment="Center"  -->
+        <!--  Width="300" />  -->
+
+        <StackPanel Margin="10" VerticalAlignment="Top">
+            <TextBlock Foreground="Yellow" Text="{Binding FrameRate}" />
+            <TextBlock Foreground="Yellow" Text="{Binding FrameCount}" />
+            <TextBlock Foreground="Yellow" Text="{Binding FrameResolution}" />
+            <TextBlock Foreground="Yellow" Text="{Binding QrCodeText}" />
+        </StackPanel>
         <StackPanel Margin="10" VerticalAlignment="Bottom">
             <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
                 <ComboBox
@@ -39,10 +60,6 @@
                     Margin="0,0,10,0"
                     Width="120" />
             </StackPanel>
-            <TextBlock Foreground="Yellow" Text="{Binding FrameRate}" />
-            <TextBlock Foreground="Yellow" Text="{Binding FrameCount}" />
-            <TextBlock Foreground="Yellow" Text="{Binding FrameResolution}" />
-            <TextBlock Foreground="Yellow" Text="{Binding QrCodeText}" />
         </StackPanel>
     </Grid>
 

@@ -168,7 +168,7 @@ public partial class QrScannerWindowViewModel : ObservableObject
 
     public async Task StopCaptureSafeAsync()
     {
-        if (_isStopping) return; // Prevent multiple stop calls
+        if (_isStopping) return;
         _isStopping = true;
 
         try
@@ -204,69 +204,88 @@ public partial class QrScannerWindowViewModel : ObservableObject
     private int _decodeCounter;
     private const int DecodeSkipFrames = 5;
 
-    private void OnFrameReceivedAsync(PixelBufferScope bufferScope)
+   private void OnFrameReceivedAsync(PixelBufferScope bufferScope)
+{
+    try
     {
-        try
+        using var skBitmap = SKBitmap.Decode(bufferScope.Buffer.ReferImage());
+        if (skBitmap == null) return;
+
+        const int cropWidth = 400;
+        const int cropHeight = 400;
+
+        // Center the crop area
+        int x = (skBitmap.Width - cropWidth) / 2;
+        int y = (skBitmap.Height - cropHeight) / 2;
+
+
+        if (x < 0 || y < 0 || cropWidth > skBitmap.Width || cropHeight > skBitmap.Height)
         {
-            using var skBitmap = SKBitmap.Decode(bufferScope.Buffer.ReferImage());
-            if (skBitmap == null) return;
+            Console.WriteLine("Crop area is out of bounds.");
+            return;
+        }
 
-            var copiedBitmap = new SKBitmap(skBitmap.Info);
-            skBitmap.CopyTo(copiedBitmap);
+        var croppedBitmap = new SKBitmap(cropWidth, cropHeight);
+        using var canvas = new SKCanvas(croppedBitmap);
+        var srcRect = new SKRectI(x, y, x + cropWidth, y + cropHeight);
+        var destRect = new SKRectI(0, 0, cropWidth, cropHeight);
+        canvas.DrawBitmap(skBitmap, srcRect, destRect);
 
-            // Post UI updates immediately for frame display and stats
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            CameraFrame = croppedBitmap;
+            FrameResolution = $"Resolution: {croppedBitmap.Width}x{croppedBitmap.Height}";
+            _nFrameCount++;
+            FrameCount = $"Frames Captured: {_nFrameCount}";
+
+            var elapsedSeconds = _frameTimer.Elapsed.TotalSeconds;
+            if (elapsedSeconds > 0)
             {
-                CameraFrame = copiedBitmap;
-                FrameResolution = $"Resolution: {copiedBitmap.Width}x{copiedBitmap.Height}";
-                _nFrameCount++;
-                FrameCount = $"Frames Captured: {_nFrameCount}";
+                FrameRate = $"Frame Rate: {(_nFrameCount / elapsedSeconds):F2} fps";
+            }
+        });
 
-                var elapsedSeconds = _frameTimer.Elapsed.TotalSeconds;
-                if (elapsedSeconds > 0)
-                {
-                    FrameRate = $"Frame Rate: {(_nFrameCount / elapsedSeconds):F2} fps";
-                }
-            });
-
-            if (_decodeCounter++ % DecodeSkipFrames != 0) return;
-            Task.Run(() =>
+        // QR code detection (unchanged)
+        if (_decodeCounter++ % DecodeSkipFrames != 0) return;
+        Task.Run(() =>
+        {
+            var reader = new BarcodeReader
             {
-                var reader = new BarcodeReader
+                AutoRotate = true,
+                Options = new DecodingOptions
                 {
-                    AutoRotate = true,
-                    Options = new DecodingOptions
-                    {
-                        TryHarder = true,
-                        PossibleFormats = new[] { BarcodeFormat.QR_CODE }
-                    }
-                };
-
-                var result = reader.Decode(copiedBitmap);
-                if (result != null)
-                {
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                    {
-                        QrCodeText = $"QR Code: {result.Text}";
-                        Console.WriteLine($"QR Code detected: {result.Text}");
-
-                        _ = StopCaptureSafeAsync();
-                        _windowManagerService.CloseWindow("QrWindow");
-                    });
+                    TryHarder = true,
+                    PossibleFormats = new[] { BarcodeFormat.QR_CODE }
                 }
-                else
+            };
+
+            var result = reader.Decode(croppedBitmap);
+            if (result != null)
+            {
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() => { QrCodeText = "No QR code detected"; });
-                }
-            });
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error processing frame: {ex.Message}");
-        }
-        finally
-        {
-            bufferScope.ReleaseNow();
-        }
+                    QrCodeText = $"QR Code: {result.Text}";
+                    Console.WriteLine($"QR Code detected: {result.Text}");
+
+                    _ = StopCaptureSafeAsync();
+                    _windowManagerService.CloseWindow("QrWindow");
+                });
+            }
+            else
+            {
+                Avalonia.Threading.Dispatcher.UIThread.Post(() => { QrCodeText = "No QR code detected"; });
+            }
+        });
     }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error processing frame: {ex.Message}");
+    }
+    finally
+    {
+        bufferScope.ReleaseNow();
+    }
+}
+
 }

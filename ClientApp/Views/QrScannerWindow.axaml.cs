@@ -11,8 +11,8 @@ public partial class QrScannerWindow : AppWindow
     public QrScannerWindow()
     {
         InitializeComponent();
-
-        this.Closed += (_, _) =>
+        TitleBar.ExtendsContentIntoTitleBar = true;
+        Closed += (_, _) =>
         {
             if (DataContext is QrScannerWindowViewModel vm)
             {

@@ -1,23 +1,24 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using ClientApp.Services;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Avalonia.Threading;
 
 namespace ClientApp.ViewModels;
 
 public partial class HomeViewModel : ViewModelBase
 {
-    private readonly IServiceProvider _serviceProvider;
     private readonly WindowManagerService _windowManagerService;
 
-    public HomeViewModel(IServiceProvider serviceProvider, WindowManagerService windowManagerService)
-    {
-        _serviceProvider = serviceProvider;
-        _windowManagerService = windowManagerService;
-    }
+    [ObservableProperty] private string _testBox;
 
-    public HomeViewModel()
+    public HomeViewModel(WindowManagerService windowManagerService)
     {
-        throw new NotImplementedException();
+        _windowManagerService = windowManagerService;
+
     }
 
     [RelayCommand]
@@ -25,7 +26,20 @@ public partial class HomeViewModel : ViewModelBase
     {
         _ = _windowManagerService.OpenQrWindowAsDialog();
     }
+
+    [RelayCommand]
+    public void OpenCustomerWindow()
+    {
+        _windowManagerService.OpenCustomerWindow();
+    }
+
+    partial void OnTestBoxChanged(string value)
+    {
+
+    }
+
+
+
+
+
 }
-
-
-

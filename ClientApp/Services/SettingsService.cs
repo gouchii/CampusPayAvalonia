@@ -19,7 +19,6 @@ public class SettingsService
         Directory.CreateDirectory(appDataPath); // Ensure the directory exists
         _settingsFilePath = Path.Combine(appDataPath, "settings.json");
         _settings = new Dictionary<string, object>();
-        LoadSettings();
     }
 
     public T GetSetting<T>(string key, T defaultValue)

@@ -34,7 +34,7 @@ public partial class LoginViewModel : ViewModelBase
         LoadingOverlay.ShowLoadingOverlay(true);
         await Task.Delay(2000);
         LoadingOverlay.ShowLoadingOverlay(false);
-        var activeWindow = CurrentWindow.Get();
+        var activeWindow = WindowHelper.Get();
         var frame = activeWindow?.FindControl<Frame>("AuthFrame");
         if (frame != null)
             _navigationService.NavigateTo<SignUpViewModel>(frame,

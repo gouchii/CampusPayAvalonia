@@ -1,0 +1,31 @@
+<Window
+    Title="CustomerWindow"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="ClientApp.Views.CustomerWindow"
+    x:DataType="vm:CustomerWindowViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:ClientApp.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
+    <ScrollViewer Padding="16">
+        <Grid Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
+            <StackPanel
+                HorizontalAlignment="Center"
+                Orientation="Vertical"
+                VerticalAlignment="Center">
+                <TextBox Watermark="Customer Window Test" Width="200" />
+                <Button
+                    Command="{Binding OpenQrWindow}"
+                    Content="Open Window"
+                    Width="120">
+                    <Button.Classes>accent</Button.Classes>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Window>

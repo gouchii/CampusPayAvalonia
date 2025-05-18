@@ -24,11 +24,25 @@
                     <Button.Classes>accent</Button.Classes>
                 </Button>
                 <Button
-                    Command="{Binding OpenScanDialog}"
-                    Content="Devices"
-                    Width="90">
+                    Command="{Binding OpenCustomerWindow}"
+                    Content="Open Window"
+                    Width="120">
                     <Button.Classes>accent</Button.Classes>
                 </Button>
+                <TextBox
+                    Text="{Binding TestBox}"
+                    Watermark="Merchant Window Test"
+                    Width="200" />
+                <!--  <ComboBox  -->
+                <!--  ItemsSource="{Binding}"  -->
+                <!--  SelectedItem="{Binding}"  -->
+                <!--  Width="200">  -->
+                <!--     <ComboBox.ItemTemplate> -->
+                <!--         <DataTemplate> -->
+                <!--             <TextBlock Text="" /> -->
+                <!--         </DataTemplate> -->
+                <!--     </ComboBox.ItemTemplate> -->
+                <!-- </ComboBox> -->
             </StackPanel>
         </Grid>
     </ScrollViewer>

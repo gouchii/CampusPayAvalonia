@@ -1,16 +1,14 @@
-using System;
+using Avalonia;
 using Avalonia.Controls;
-
+using Avalonia.Markup.Xaml;
 using FluentAvalonia.UI.Windowing;
 
 namespace ClientApp.Views;
 
-public partial class MainWindow : AppWindow
+public partial class CustomerWindow : AppWindow
 {
-
-    public MainWindow()
+    public CustomerWindow()
     {
         InitializeComponent();
     }
-
 }

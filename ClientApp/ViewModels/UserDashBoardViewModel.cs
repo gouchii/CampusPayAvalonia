@@ -23,7 +23,7 @@ public partial class UserDashBoardViewModel : ViewModelBase
 
     public void OnSelectedNavigationItemChanged(object? sender, NavigationViewSelectionChangedEventArgs e)
     {
-        var window = CurrentWindow.Get();
+        var window = WindowHelper.Get();
         if (e.SelectedItem is NavigationViewItem nvi)
         {
             Console.WriteLine($"Navigating to: {nvi.Tag}");

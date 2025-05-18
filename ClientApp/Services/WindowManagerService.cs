@@ -159,6 +159,22 @@ public class WindowManagerService
         authWindow.Show();
     }
 
+    public void OpenAuthWindowAsDialogBase(string baseWindowName, string windowName = "AuthWindow", string frameName = "AuthFrame")
+    {
+        var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
+        var authWindowViewModel = _serviceProvider.GetRequiredService<AuthWindowViewModel>();
+        authWindow.DataContext = authWindowViewModel;
+        authWindow.InitializeComponent();
+        RegisterWindow(windowName, authWindow);
+        if (authWindow.FindControl<Frame>("AuthFrame") is { } frame)
+        {
+            _navigationService.RegisterFrame(authWindow, frame, frameName);
+            _navigationService.NavigateTo<LoginViewModel>(authWindow, frameName);
+        }
+        var currentWindow = GetActiveWindow(baseWindowName);
+        if (currentWindow != null) authWindow.ShowDialog(currentWindow);
+    }
+
     public async Task OpenQrWindowAsDialog(string windowName = "QrWindow")
     {
         var qrScannerWindow = _serviceProvider.GetRequiredService<QrScannerWindow>();
@@ -166,10 +182,30 @@ public class WindowManagerService
         qrScannerWindow.DataContext = qrScannerWindowViewModel;
         qrScannerWindow.InitializeComponent();
         RegisterWindow(windowName, qrScannerWindow);
-        var currentWindow = CurrentWindow.Get();
+        var currentWindow = WindowHelper.Get();
         if (currentWindow != null) await qrScannerWindow.ShowDialog(currentWindow);
-        //     Console.WriteLine("Stopping CameraFeed");
-        // };
+    }
+
+    public async Task OpenQrWindowAsDialogBase(string baseWindowName, string windowName = "QrWindow")
+    {
+        var qrScannerWindow = _serviceProvider.GetRequiredService<QrScannerWindow>();
+        var qrScannerWindowViewModel = _serviceProvider.GetRequiredService<QrScannerWindowViewModel>();
+        qrScannerWindow.DataContext = qrScannerWindowViewModel;
+        qrScannerWindow.InitializeComponent();
+        RegisterWindow(windowName, qrScannerWindow);
+        var currentWindow = GetActiveWindow(baseWindowName);
+        if (currentWindow != null) await qrScannerWindow.ShowDialog(currentWindow);
+    }
+
+    public void OpenCustomerWindow(string windowName = "CustomerWindow")
+    {
+        var customerWindow = _serviceProvider.GetRequiredService<CustomerWindow>();
+        var customerViewModel = _serviceProvider.GetRequiredService<CustomerWindowViewModel>();
+        customerWindow.DataContext = customerViewModel;
+        customerWindow.InitializeComponent();
+        RegisterWindow(windowName, customerWindow);
+
+        customerWindow.Show();
     }
 
 }

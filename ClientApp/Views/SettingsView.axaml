@@ -20,8 +20,8 @@
         <StackPanel Spacing="8">
             <Grid
                 ColumnDefinitions="*,Auto"
-                Margin="0,0,0,10"
-                RowDefinitions="*,Auto">
+                Margin="0,0,0,20"
+                RowDefinitions="*,*,*">
                 <ui:SettingsExpander
                     Description="Change the current app theme"
                     Foreground="{DynamicResource SystemAccentColor}"
@@ -247,6 +247,29 @@
                             </StackPanel>
                         </ui:SettingsExpanderItem.Footer>
                     </ui:SettingsExpanderItem>
+                </ui:SettingsExpander>
+
+                <ui:SettingsExpander
+                    Description="Choose a capture device to use in QR scanning"
+                    Foreground="{DynamicResource SystemAccentColor}"
+                    Grid.Column="0"
+                    Grid.Row="2"
+                    Header="Qr Capture Device"
+                    IconSource="DarkTheme">
+
+                    <ui:SettingsExpander.Footer>
+                        <StackPanel Orientation="Vertical">
+                            <ComboBox
+                                ItemsSource="{Binding DeviceList, Mode=TwoWay}"
+                                Margin="0,0,0,20"
+                                MinWidth="300"
+                                SelectedItem="{Binding SelectedDevice, Mode=TwoWay}" />
+                            <ComboBox
+                                ItemsSource="{Binding CharacteristicList}"
+                                MinWidth="300"
+                                SelectedItem="{Binding SelectedCharacteristics, Mode=TwoWay}" />
+                        </StackPanel>
+                    </ui:SettingsExpander.Footer>
 
                 </ui:SettingsExpander>
             </Grid>

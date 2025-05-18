@@ -5,7 +5,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 
 namespace ClientApp.Helpers;
 
-public static class CurrentWindow
+public static class WindowHelper
 {
     public static Window? Get()
     {
@@ -15,4 +15,5 @@ public static class CurrentWindow
         // Find the active and visible window
         return desktopLifetime.Windows.FirstOrDefault(window => window.IsActive && window.IsVisible);
     }
+
 }

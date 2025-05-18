@@ -24,6 +24,7 @@ public class ThemeService
 
     public void ApplySavedTheme()
     {
+        Console.WriteLine($"Applying saved theme");
         var savedTheme = _settingsService.GetSetting("CurrentAppTheme", "System");
         SetTheme(savedTheme, saveSetting: false);
 

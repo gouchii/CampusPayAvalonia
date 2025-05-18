@@ -168,13 +168,8 @@ public class WindowManagerService
         RegisterWindow(windowName, qrScannerWindow);
         var currentWindow = CurrentWindow.Get();
         if (currentWindow != null) await qrScannerWindow.ShowDialog(currentWindow);
-        // await qrScannerWindowViewModel.StartCaptureAsync();
-        Console.WriteLine("Starting CameraFeed");
-        qrScannerWindow.Closing += (_, _) =>
-        {
-            _ = qrScannerWindowViewModel.StopCaptureAsync();
-            Console.WriteLine("Stopping CameraFeed");
-        };
+        //     Console.WriteLine("Stopping CameraFeed");
+        // };
     }
 
 }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ClientApp.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FlashCap;
@@ -19,39 +20,40 @@ public partial class QrScannerWindowViewModel : ObservableObject
     private readonly CaptureDevices _captureDevices = new();
     private CaptureDevice? _captureDevice;
     private CancellationTokenSource? _cancellationTokenSource;
-    private Stopwatch _frameTimer = new();
+    private readonly Stopwatch _frameTimer = new();
     private int _nFrameCount;
 
-    [ObservableProperty]
-    private SKBitmap? _cameraFrame;
+    [ObservableProperty] private SKBitmap? _cameraFrame;
 
-    [ObservableProperty]
-    private ObservableCollection<CaptureDeviceDescriptor> _deviceList = new();
+    [ObservableProperty] private ObservableCollection<CaptureDeviceDescriptor> _deviceList = new();
 
-    [ObservableProperty]
-    private CaptureDeviceDescriptor? _selectedDevice;
+    [ObservableProperty] private CaptureDeviceDescriptor? _selectedDevice;
 
-    [ObservableProperty]
-    private ObservableCollection<VideoCharacteristics> _characteristicsList = new();
+    [ObservableProperty] private ObservableCollection<VideoCharacteristics> _characteristicsList = new();
 
-    [ObservableProperty]
-    private VideoCharacteristics? _selectedCharacteristics;
+    [ObservableProperty] private VideoCharacteristics? _selectedCharacteristics;
 
-    [ObservableProperty]
-    private string _frameRate = "Frame Rate: 0 fps";
+    [ObservableProperty] private string _frameRate = "Frame Rate: 0 fps";
 
-    [ObservableProperty]
-    private string _frameResolution = "Resolution: N/A";
+    [ObservableProperty] private string _frameResolution = "Resolution: N/A";
 
-    [ObservableProperty]
-    private string _frameCount = "Frames Captured: 0";
+    [ObservableProperty] private string _frameCount = "Frames Captured: 0";
 
-    [ObservableProperty]
-    private string _qrCodeText = "No QR code detected";
+    [ObservableProperty] private string _qrCodeText = "No QR code detected";
 
-    public QrScannerWindowViewModel()
+    private readonly WindowManagerService _windowManagerService;
+
+    public QrScannerWindowViewModel(WindowManagerService windowManagerService)
     {
+        _windowManagerService = windowManagerService;
         LoadDevices();
+        _ = StartCaptureAsync();
+    }
+
+    public void OnClosed()
+    {
+        _ = StopCaptureSafeAsync();
+        Console.WriteLine("Camera stopped on window close.");
     }
 
     private void LoadDevices()
@@ -75,7 +77,6 @@ public partial class QrScannerWindowViewModel : ObservableObject
 
     partial void OnSelectedDeviceChanged(CaptureDeviceDescriptor? value)
     {
-        // Automatically update characteristics when device changes
         CharacteristicsList.Clear();
         if (value != null)
         {
@@ -83,6 +84,7 @@ public partial class QrScannerWindowViewModel : ObservableObject
             {
                 CharacteristicsList.Add(characteristic);
             }
+
             SelectedCharacteristics = CharacteristicsList.FirstOrDefault();
         }
         else
@@ -92,7 +94,7 @@ public partial class QrScannerWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task StartCaptureAsync()
+    private async Task StartCaptureAsync()
     {
         if (_captureDevice != null)
         {
@@ -130,9 +132,8 @@ public partial class QrScannerWindowViewModel : ObservableObject
         }
     }
 
-
     [RelayCommand]
-    public async Task StopCaptureAsync()
+    private async Task StopCaptureAsync()
     {
         _cancellationTokenSource?.Cancel();
 
@@ -163,41 +164,61 @@ public partial class QrScannerWindowViewModel : ObservableObject
         CameraFrame = null;
     }
 
+    private bool _isStopping;
+
+    public async Task StopCaptureSafeAsync()
+    {
+        if (_isStopping) return; // Prevent multiple stop calls
+        _isStopping = true;
+
+        try
+        {
+            _cancellationTokenSource?.Cancel();
+
+            if (_captureDevice != null)
+            {
+                await _captureDevice.StopAsync();
+                await _captureDevice.DisposeAsync();
+                _captureDevice = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error stopping capture: {ex.Message}");
+        }
+        finally
+        {
+            _cancellationTokenSource?.Dispose();
+            _cancellationTokenSource = null;
+            _frameTimer.Stop();
+
+            FrameRate = "Frame Rate: 0 fps";
+            FrameCount = "Frames Captured: 0";
+            FrameResolution = "Resolution: N/A";
+            CameraFrame = null;
+
+            _isStopping = false;
+        }
+    }
+
+    private int _decodeCounter;
+    private const int DecodeSkipFrames = 5;
+
     private void OnFrameReceivedAsync(PixelBufferScope bufferScope)
     {
         try
         {
-            var imageBytes = bufferScope.Buffer.ReferImage();
-            // await using var ms = new MemoryStream(imageBytes);
-            // var bitmap = new Bitmap(ms);
+            using var skBitmap = SKBitmap.Decode(bufferScope.Buffer.ReferImage());
+            if (skBitmap == null) return;
 
-            var skBitmap = SKBitmap.Decode(imageBytes);
-            // Decode QR code
-            var reader = new BarcodeReader
-            {
-                AutoRotate = true,
-                Options = new DecodingOptions
-                {
-                    TryHarder = true,
-                    PossibleFormats = new[] { BarcodeFormat.QR_CODE }
-                }
-            };
+            var copiedBitmap = new SKBitmap(skBitmap.Info);
+            skBitmap.CopyTo(copiedBitmap);
 
-            var result = reader.Decode(skBitmap);
-            if (result != null)
-            {
-                QrCodeText = $"QR Code: {result.Text}";
-                Console.WriteLine($"QR Code detected: {result.Text}");
-            }
-            else
-            {
-                QrCodeText = "No QR code detected";
-            }
-
+            // Post UI updates immediately for frame display and stats
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
-                CameraFrame = skBitmap;
-                FrameResolution = $"Resolution: {skBitmap.Width}x{skBitmap.Width}";
+                CameraFrame = copiedBitmap;
+                FrameResolution = $"Resolution: {copiedBitmap.Width}x{copiedBitmap.Height}";
                 _nFrameCount++;
                 FrameCount = $"Frames Captured: {_nFrameCount}";
 
@@ -205,6 +226,37 @@ public partial class QrScannerWindowViewModel : ObservableObject
                 if (elapsedSeconds > 0)
                 {
                     FrameRate = $"Frame Rate: {(_nFrameCount / elapsedSeconds):F2} fps";
+                }
+            });
+
+            if (_decodeCounter++ % DecodeSkipFrames != 0) return;
+            Task.Run(() =>
+            {
+                var reader = new BarcodeReader
+                {
+                    AutoRotate = true,
+                    Options = new DecodingOptions
+                    {
+                        TryHarder = true,
+                        PossibleFormats = new[] { BarcodeFormat.QR_CODE }
+                    }
+                };
+
+                var result = reader.Decode(copiedBitmap);
+                if (result != null)
+                {
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        QrCodeText = $"QR Code: {result.Text}";
+                        Console.WriteLine($"QR Code detected: {result.Text}");
+
+                        _ = StopCaptureSafeAsync();
+                        _windowManagerService.CloseWindow("QrWindow");
+                    });
+                }
+                else
+                {
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() => { QrCodeText = "No QR code detected"; });
                 }
             });
         }
@@ -218,6 +270,3 @@ public partial class QrScannerWindowViewModel : ObservableObject
         }
     }
 }
-
-
-

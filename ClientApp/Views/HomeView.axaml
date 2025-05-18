@@ -13,14 +13,23 @@
 
     <ScrollViewer Padding="16">
         <Grid Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
-            <Button
-                Command="{Binding OpenScanDialog}"
-                Content="Pay"
+            <StackPanel
                 HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Width="90">
-                <Button.Classes>accent</Button.Classes>
-            </Button>
+                Orientation="Vertical"
+                VerticalAlignment="Center">
+                <Button
+                    Command="{Binding OpenScanDialog}"
+                    Content="Scan"
+                    Width="90">
+                    <Button.Classes>accent</Button.Classes>
+                </Button>
+                <Button
+                    Command="{Binding OpenScanDialog}"
+                    Content="Devices"
+                    Width="90">
+                    <Button.Classes>accent</Button.Classes>
+                </Button>
+            </StackPanel>
         </Grid>
     </ScrollViewer>
 </UserControl>

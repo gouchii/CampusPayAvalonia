@@ -30,9 +30,9 @@
 
                     <ui:SettingsExpander.Footer>
                         <ComboBox
-                            ItemsSource="{Binding AppThemes}"
+                            ItemsSource="{Binding AppThemes, Mode=TwoWay}"
                             MinWidth="150"
-                            SelectedItem="{Binding CurrentAppTheme}" />
+                            SelectedItem="{Binding CurrentAppTheme, Mode=TwoWay}" />
                     </ui:SettingsExpander.Footer>
                 </ui:SettingsExpander>
 
@@ -145,22 +145,22 @@
                         <CheckBox
                             Content="Use Custom Accent Color?"
                             HorizontalAlignment="Right"
-                            IsChecked="{Binding UseCustomAccent}" />
+                            IsChecked="{Binding UseCustomAccent, Mode=TwoWay}" />
                         <ui:SettingsExpanderItem.Footer>
                             <StackPanel>
                                 <TextBlock
-                                    IsVisible="{Binding UseCustomAccent}"
+                                    IsVisible="{Binding UseCustomAccent, Mode=TwoWay}"
                                     Margin="24,24,0,0"
                                     Text="Pre-set Colors" />
 
                                 <ListBox
                                     AutoScrollToSelectedItem="False"
                                     HorizontalAlignment="Left"
-                                    IsVisible="{Binding UseCustomAccent}"
-                                    ItemsSource="{Binding PredefinedColors}"
+                                    IsVisible="{Binding UseCustomAccent, Mode=TwoWay}"
+                                    ItemsSource="{Binding PredefinedColors, Mode=TwoWay}"
                                     Margin="24,0,24,12"
                                     MaxWidth="441"
-                                    SelectedItem="{Binding ListBoxColor}">
+                                    SelectedItem="{Binding ListBoxColor, Mode=TwoWay}">
                                     <ListBox.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <WrapPanel />
@@ -222,10 +222,10 @@
                                 <Rectangle
                                     Fill="{DynamicResource ApplicationPageBackgroundThemeBrush}"
                                     Height="1"
-                                    IsVisible="{Binding UseCustomAccent}" />
+                                    IsVisible="{Binding UseCustomAccent, Mode=TwoWay}" />
 
                                 <DockPanel
-                                    IsVisible="{Binding UseCustomAccent}"
+                                    IsVisible="{Binding UseCustomAccent, Mode=TwoWay}"
                                     LastChildFill="False"
                                     Margin="24,6,0,0">
                                     <TextBlock
@@ -234,7 +234,7 @@
                                         VerticalAlignment="Center" />
 
                                     <ui:ColorPickerButton
-                                        Color="{Binding CustomAccentColor}"
+                                        Color="{Binding CustomAccentColor, Mode=TwoWay}"
                                         DockPanel.Dock="Right"
                                         IsCompact="True"
                                         IsMoreButtonVisible="True"

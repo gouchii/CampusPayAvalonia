@@ -2,33 +2,38 @@ using System;
 using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Media;
-using Avalonia.Styling;
-using FluentAvalonia.Styling;
+using ClientApp.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClientApp.ViewModels;
 
 public partial class SettingsViewModel : ViewModelBase
 {
-    private readonly FluentAvaloniaTheme? _faTheme;
-
     [ObservableProperty]
     private bool _useCustomAccent;
 
     [ObservableProperty]
-    private Color _customAccentColor = Colors.SlateBlue;
+    private Color _customAccentColor;
 
     [ObservableProperty]
-    private string _currentAppTheme = _system;
+    private string _currentAppTheme;
 
     [ObservableProperty]
     private Color? _listBoxColor;
 
-    public SettingsViewModel()
+    private readonly ThemeService _themeService;
+
+    public SettingsViewModel(SettingsService settingsService, ThemeService themeService)
     {
+
+        _themeService = themeService;
         GetPredefColors();
-        _faTheme = Application.Current?.Styles[0] as FluentAvaloniaTheme;
-        Console.WriteLine($"Theme set to {_faTheme}");
+
+        CurrentAppTheme = _themeService.Theme;
+        UseCustomAccent = _themeService.UseCustomAccent;
+        CustomAccentColor = _themeService.Accent;
+
+        Console.WriteLine($"Settings View Model : {CurrentAppTheme}, {UseCustomAccent}, {CustomAccentColor}");
     }
 
 
@@ -41,60 +46,37 @@ public partial class SettingsViewModel : ViewModelBase
         typeof(Application).Assembly.GetName().Version?.ToString() ?? throw new InvalidOperationException();
 
     public string[] AppThemes { get; } =
-        new[] { _system, _light , _dark };
+        new[] { System, Light , Dark };
 
     partial void OnUseCustomAccentChanged(bool value)
     {
 
         if (value)
         {
-            if (_faTheme != null && _faTheme.TryGetResource("SystemAccentColor", null, out var curColor))
-            {
-                Console.WriteLine($"Tried to change the accent color to {CustomAccentColor}");
-                CustomAccentColor = (Color)curColor;
-                ListBoxColor = CustomAccentColor;
-            }
-            else
-            {
-                throw new Exception("Unable to retrieve SystemAccentColor");
-            }
+            _themeService.SetAccentColor(CustomAccentColor);
         }
         else
         {
-            CustomAccentColor = default;
-            ListBoxColor = default;
-            UpdateAppAccentColor(null);
+            _themeService.DisableCustomAccent();
         }
     }
 
     partial void OnListBoxColorChanged(Color? value)
     {
         CustomAccentColor = value ?? default;
-        UpdateAppAccentColor(CustomAccentColor);
+        _themeService.SetAccentColor(CustomAccentColor);
     }
+
     partial void OnCustomAccentColorChanged(Color value)
     {
         ListBoxColor = value;
-        UpdateAppAccentColor(value);
+        _themeService.SetAccentColor(value);
     }
 
     partial void OnCurrentAppThemeChanged(string value)
     {
-        var newTheme = GetThemeVariant(value);
-        if (newTheme != null)
-        {
-            Application.Current!.RequestedThemeVariant = newTheme;
-        }
-        if (_faTheme != null) _faTheme.PreferSystemTheme = (value == _system);
+        _themeService.SetTheme(value);
     }
-
-    private ThemeVariant? GetThemeVariant(string value) => value switch
-    {
-        _light => ThemeVariant.Light,
-        _dark => ThemeVariant.Dark,
-        _system => null,
-        _ => null,
-    };
 
     private void GetPredefColors()
     {
@@ -151,13 +133,7 @@ public partial class SettingsViewModel : ViewModelBase
         };
     }
 
-    private void UpdateAppAccentColor(Color? color)
-    {
-        Console.WriteLine($"{_faTheme} set the accent color to {color}");
-        if (_faTheme != null) _faTheme.CustomAccentColor = color;
-    }
-
-    private const string _system = "System";
-    private const string _dark = "Dark";
-    private const string _light = "Light";
+    private const string System = "System";
+    private const string Dark = "Dark";
+    private const string Light = "Light";
 }

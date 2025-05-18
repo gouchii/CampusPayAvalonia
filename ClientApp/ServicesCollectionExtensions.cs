@@ -38,5 +38,8 @@ public static class ServicesCollectionExtensions
         collection.AddSingleton<ViewLocator>();
         collection.AddSingleton<NavigationPageFactory>();
         collection.AddSingleton<WindowManagerService>();
+        collection.AddSingleton<SettingsService>();
+        collection.AddSingleton<ThemeService>();
+        collection.AddSingleton<DeviceManager>();
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -21,10 +20,6 @@ public partial class SignUpViewModel : ViewModelBase
         _windowManagerService = windowManagerService;
     }
 
-    public SignUpViewModel()
-    {
-    }
-
     [RelayCommand]
     public void NavigateToLogIn()
     {
@@ -41,5 +36,4 @@ public partial class SignUpViewModel : ViewModelBase
                     Effect = SlideNavigationTransitionEffect.FromRight
                 });
     }
-
 }

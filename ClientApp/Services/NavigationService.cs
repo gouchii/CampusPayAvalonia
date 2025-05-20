@@ -36,27 +36,23 @@ public class NavigationService
 
     public void UnregisterAllFrames(Window window)
     {
-        if (_windowFrames.TryGetValue(window, out var frames))
-        {
-            foreach (var (name, frame) in frames)
-            {
-                frame.BackStack.Clear();
-                frame.ForwardStack.Clear();
-                frame.Content = null;
-                Console.WriteLine($"Unregistering frame: {name} from window: {window.Title}");
-            }
-            _windowFrames.Remove(window);
-        }
-    }
-
-    public void UnregisterFrame(Window window, string frameName)
-    {
-        if (_windowFrames.TryGetValue(window, out var frames) && frames.Remove(frameName, out var frame))
+        if (!_windowFrames.TryGetValue(window, out var frames)) return;
+        foreach (var (name, frame) in frames)
         {
             frame.BackStack.Clear();
             frame.ForwardStack.Clear();
             frame.Content = null;
+            Console.WriteLine($"Unregistering frame: {name} from window: {window.Title}");
         }
+        _windowFrames.Remove(window);
+    }
+
+    public void UnregisterFrame(Window window, string frameName)
+    {
+        if (!_windowFrames.TryGetValue(window, out var frames) || !frames.Remove(frameName, out var frame)) return;
+        frame.BackStack.Clear();
+        frame.ForwardStack.Clear();
+        frame.Content = null;
     }
 
     public void NavigateTo<TViewModel>(Window window, string frameName, NavigationTransitionInfo? transitionInfo = null) where TViewModel : class

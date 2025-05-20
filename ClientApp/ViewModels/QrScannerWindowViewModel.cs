@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using ClientApp.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FlashCap;
 using SkiaSharp;
 using ZXing;
 using ZXing.Common;
@@ -45,7 +44,6 @@ public partial class QrScannerWindowViewModel : ObservableObject
 
     private void OnCaptureStarted()
     {
-        Console.WriteLine("Camera capture started.");
         FrameRate = "Frame Rate: 0 fps";
         FrameCount = "Frames Captured: 0";
         FrameResolution = "Resolution: N/A";
@@ -54,7 +52,6 @@ public partial class QrScannerWindowViewModel : ObservableObject
 
     private void OnCaptureStopped()
     {
-        Console.WriteLine("Camera capture stopped.");
         FrameRate = "Frame Rate: 0 fps";
         FrameCount = "Frames Captured: 0";
         FrameResolution = "Resolution: N/A";

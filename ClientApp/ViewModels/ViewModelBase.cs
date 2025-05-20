@@ -11,14 +11,12 @@ public partial class ViewModelBase : ObservableObject
 {
     protected string GetAssemblyResource(string name)
     {
-        using (var stream = AssetLoader.Open(new Uri(name)))
-        using (StreamReader reader = new StreamReader(stream))
-        {
-            return reader.ReadToEnd();
-        }
+        using var stream = AssetLoader.Open(new Uri(name));
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
     }
 
-    protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
+    protected new bool SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
     {
         if (!EqualityComparer<T>.Default.Equals(field, value))
         {
@@ -29,13 +27,13 @@ public partial class ViewModelBase : ObservableObject
     }
 
     [ObservableProperty]
-    private string navHeader;
+    private string _navHeader;
 
     [ObservableProperty]
-    private string iconKey;
+    private string _iconKey;
 
     [ObservableProperty]
-    private bool showsInFooter;
+    private bool _showsInFooter;
 
     public partial class MainPageViewModelBase : ViewModelBase
     {

@@ -12,10 +12,6 @@
     xmlns:vm="using:ClientApp.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Design.DataContext>
-        <vm:SettingsViewModel />
-    </Design.DataContext>
-
     <ScrollViewer Padding="16">
         <StackPanel Spacing="8">
             <Grid
@@ -255,7 +251,7 @@
                     Grid.Column="0"
                     Grid.Row="2"
                     Header="Qr Capture Device"
-                    IconSource="DarkTheme">
+                    IconSource="Camera">
 
                     <ui:SettingsExpander.Footer>
                         <Grid ColumnDefinitions="Auto" RowDefinitions="*,*">

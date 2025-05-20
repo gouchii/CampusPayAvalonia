@@ -9,19 +9,18 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ClientApp;
 
-public partial class App : Application
+public class App : Application
 {
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
-
     }
 
     public override void OnFrameworkInitializationCompleted()
     {
         var collection = new ServiceCollection();
         collection.AddCommonServices();
-
+        DisableAvaloniaDataAnnotationValidation();
         var services = collection.BuildServiceProvider();
         var windowManager = services.GetRequiredService<WindowManagerService>();
         var preferences = services.GetService<SettingsService>();
@@ -31,12 +30,9 @@ public partial class App : Application
         deviceManager?.LoadDevices();
         deviceManager?.LoadSelectedDeviceFromSettings();
         themeService?.ApplySavedTheme();
-        DisableAvaloniaDataAnnotationValidation();
 
         windowManager.OpenMainWindowAuthAsDialog();
-
         base.OnFrameworkInitializationCompleted();
-
     }
 
     private void DisableAvaloniaDataAnnotationValidation()

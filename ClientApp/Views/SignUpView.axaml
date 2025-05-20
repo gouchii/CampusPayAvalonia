@@ -12,10 +12,6 @@
     xmlns:vm="using:ClientApp.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Design.DataContext>
-        <vm:SignUpViewModel />
-    </Design.DataContext>
-
     <StackPanel Margin="20" Spacing="10">
 
         <Grid ColumnDefinitions="30,*">

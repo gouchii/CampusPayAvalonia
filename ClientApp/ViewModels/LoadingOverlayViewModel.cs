@@ -5,19 +5,16 @@ namespace ClientApp.ViewModels;
 
 public partial class LoadingOverlayViewModel : ViewModelBase
 {
+    [ObservableProperty] private bool _isHitTestVisible;
 
-    [ObservableProperty]
-    private bool _isHitTestVisible = false;
+    [ObservableProperty] private double _opacityValue;
 
-    [ObservableProperty]
-    private double _opacityValue = 0;
-
-    [ObservableProperty] private bool _isVisible = false;
+    [ObservableProperty] private bool _isVisible;
 
 
     public LoadingOverlayViewModel()
     {
-        PropertyChanged += (s, e) => Console.WriteLine($"{e.PropertyName} changed");
+        PropertyChanged += (_, e) => Console.WriteLine($"{e.PropertyName} changed");
     }
 
     public void ShowLoadingOverlay(bool show)
@@ -32,7 +29,6 @@ public partial class LoadingOverlayViewModel : ViewModelBase
         }
         else
         {
-
             IsHitTestVisible = false;
             OpacityValue = 0;
             IsVisible = false;

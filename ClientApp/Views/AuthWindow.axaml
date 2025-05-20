@@ -20,9 +20,6 @@
     xmlns:vm="using:ClientApp.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Design.DataContext>
-        <vm:AuthWindowViewModel />
-    </Design.DataContext>
     <Border>
         <ui:Frame Name="AuthFrame" />
     </Border>

@@ -149,7 +149,7 @@ public class CaptureDeviceManager
                 }
             };
 
-            _settingsService.SetJson(SelectedCharacteristicsSettingKey, deviceInfo);
+            _settingsService.SetSetting(SelectedCharacteristicsSettingKey, deviceInfo);
         }
         else
         {

@@ -1,7 +1,6 @@
 using System;
 using ClientApp.Helpers;
 using ClientApp.Services;
-using CommunityToolkit.Mvvm.ComponentModel;
 using FluentAvalonia.UI.Controls;
 
 namespace ClientApp.ViewModels;

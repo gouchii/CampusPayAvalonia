@@ -20,36 +20,35 @@ namespace ClientApp.Services
             _settingsFilePath = Path.Combine(appDataPath, "settings.json");
             _settings = new Dictionary<string, object>();
 
-            // Load settings at startup
-
         }
 
         public T GetSetting<T>(string key, T defaultValue)
         {
             if (_settings.TryGetValue(key, out var value))
             {
-                // If it's already deserialized, return it directly
-                if (value is T typedValue)
+                switch (value)
                 {
-                    Console.WriteLine($"Trying to get setting: {key} | {typedValue}");
-                    return typedValue;
-                }
+                    case T typedValue:
+                        Console.WriteLine($"Trying to get setting: {key} | {typedValue}");
+                        return typedValue;
+                    case JsonElement element:
+                        try
+                        {
+                            var deserializedValue = JsonSerializer.Deserialize<T>(element.GetRawText()) ?? defaultValue;
+                            if (deserializedValue != null)
+                            {
+                                _settings[key] = deserializedValue;
+                                Console.WriteLine($"Trying to get setting: {key} | {deserializedValue}");
+                                return deserializedValue;
+                            }
+                        }
+                        catch (JsonException ex)
+                        {
+                            Console.WriteLine($"Error deserializing setting '{key}': {ex.Message}");
+                            return defaultValue;
+                        }
 
-                // If it's a JsonElement, deserialize it
-                if (value is JsonElement element)
-                {
-                    try
-                    {
-                        var deserializedValue = JsonSerializer.Deserialize<T>(element.GetRawText()) ?? defaultValue;
-                        _settings[key] = deserializedValue; // Cache the deserialized value for future fast access
-                        Console.WriteLine($"Trying to get setting: {key} | {deserializedValue}");
-                        return deserializedValue;
-                    }
-                    catch (JsonException ex)
-                    {
-                        Console.WriteLine($"Error deserializing setting '{key}': {ex.Message}");
-                        return defaultValue;
-                    }
+                        break;
                 }
             }
 
@@ -59,12 +58,14 @@ namespace ClientApp.Services
 
         public void SetSetting<T>(string key, T value)
         {
-            if (!_settings.ContainsKey(key) || !_settings[key]!.Equals(value))
+            if (_settings.ContainsKey(key) && _settings[key].Equals(value)) return;
+            if (value != null)
             {
-                _settings[key] = value!;
-                SettingChanged?.Invoke(key, value!);
-                SaveSettings();
+                _settings[key] = value;
+                SettingChanged?.Invoke(key, value);
             }
+
+            SaveSettings();
         }
 
         public void SaveSettings()

@@ -44,5 +44,6 @@ public static class ServicesCollectionExtensions
         collection.AddSingleton<SettingsService>();
         collection.AddSingleton<ThemeService>();
         collection.AddSingleton<CaptureDeviceManager>();
+        collection.AddSingleton<HttpService>();
     }
 }

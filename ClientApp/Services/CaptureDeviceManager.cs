@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using ClientApp.Helpers;
 using FlashCap;
 using SkiaSharp;
 
@@ -26,6 +27,9 @@ public class CaptureDeviceManager
     public event Action<SKBitmap, int, double, int>? FrameReceived;
     public event Action? CaptureStarted;
     public event Action? CaptureStopped;
+    private const int DevicePollIntervalMs = 2000;
+    private CancellationTokenSource? _deviceWatcherCts;
+    public event Action? DevicesChanged;
 
     private const string SelectedDeviceSettingKey = "SelectedCameraDeviceName";
     private const string SelectedCharacteristicsSettingKey = "SelectedCameraCharacteristics";
@@ -33,44 +37,78 @@ public class CaptureDeviceManager
     public CaptureDeviceManager(SettingsService settingsService)
     {
         _settingsService = settingsService;
+        StartDeviceWatcher();
+    }
+
+    public void StopDeviceWatcher()
+    {
+        _deviceWatcherCts?.Cancel();
+        _deviceWatcherCts?.Dispose();
+        _deviceWatcherCts = null;
+    }
+
+    private void StartDeviceWatcher()
+    {
+        _deviceWatcherCts = new CancellationTokenSource();
+        Task.Run(async () =>
+        {
+            while (!_deviceWatcherCts.Token.IsCancellationRequested)
+            {
+                RefreshDevices();
+                await Task.Delay(DevicePollIntervalMs, _deviceWatcherCts.Token);
+            }
+        }, _deviceWatcherCts.Token);
     }
 
     public void LoadSelectedDeviceFromSettings()
     {
-        var savedName = _settingsService.GetSetting(SelectedDeviceSettingKey, string.Empty);
-        if (!string.IsNullOrEmpty(savedName))
+        if (DeviceList.Count == 0)
         {
-            SelectedDevice = DeviceList.FirstOrDefault(d => d.Name == savedName);
+            Console.WriteLine("Device list is empty. Skipping device selection.");
+            return;
         }
-        else
+        var rawJson = _settingsService.GetSetting(SelectedDeviceSettingKey, string.Empty);
+        Console.WriteLine($"Raw JSON for '{SelectedDeviceSettingKey}': {rawJson}");
+
+        var savedName = _settingsService.GetSetting(SelectedDeviceSettingKey, string.Empty);
+        Console.WriteLine($"Trying to load the selected device using saved name: '{savedName}'.");
+
+        SelectedDevice = DeviceList.FirstOrDefault(d => d.Name == savedName);
+
+        if (SelectedDevice == null)
         {
+            Console.WriteLine("No matching device found. Falling back to the first available device.");
             SelectedDevice = DeviceList.FirstOrDefault();
         }
 
-        // Load the selected characteristics if a device is found
-        if (SelectedDevice != null)
-        {
-            try
-            {
-                var json = _settingsService.GetSetting(SelectedCharacteristicsSettingKey, string.Empty);
-                if (!string.IsNullOrWhiteSpace(json))
-                {
-                    var deviceInfo = JsonSerializer.Deserialize<dynamic>(json);
-                    var width = (int)(deviceInfo?.Characteristics.Width ?? throw new InvalidOperationException());
-                    var height = (int)deviceInfo.Characteristics.Height;
-                    var fps = (double)deviceInfo.Characteristics.FramesPerSecond;
+        Console.WriteLine($"The loaded selected device is: '{SelectedDevice?.Name}'.");
 
-                    SelectedCharacteristics = SelectedDevice.Characteristics
-                        .FirstOrDefault(c => c.Width == width && c.Height == height && c.FramesPerSecond == fps);
-                }
-            }
-            catch (JsonException ex)
+        if (SelectedDevice == null) return;
+        try
+        {
+            var deviceInfo = _settingsService.GetJson<DeviceInfo>(SelectedCharacteristicsSettingKey);
+            if (deviceInfo?.Characteristics == null) return;
+            var width = deviceInfo.Characteristics.Width;
+            var height = deviceInfo.Characteristics.Height;
+            var fps = deviceInfo.Characteristics.FramesPerSecond;
+            if (deviceInfo?.DeviceName == SelectedDevice.Name)
             {
-                Console.WriteLine($"Failed to parse saved characteristics: {ex.Message}");
+                SelectedCharacteristics = SelectedDevice.Characteristics
+                    .FirstOrDefault(c => c.Width == width && c.Height == height);
+
+                Console.WriteLine($"Loaded characteristics: {SelectedCharacteristics}");
+            }
+            else
+            {
+                Console.WriteLine($"Device name mismatch. Expected '{SelectedDevice.Name}', found '{deviceInfo?.DeviceName}'.");
             }
         }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"Failed to parse saved characteristics: {ex.Message}");
+            SelectedCharacteristics = null;
+        }
     }
-
 
 
     public void LoadDevices()
@@ -78,7 +116,7 @@ public class CaptureDeviceManager
         DeviceList.Clear();
         foreach (var descriptor in _captureDevices.EnumerateDescriptors())
         {
-            if (descriptor.Characteristics.Any())
+            if (descriptor.Characteristics.Length != 0)
             {
                 DeviceList.Add(descriptor);
             }
@@ -95,23 +133,23 @@ public class CaptureDeviceManager
 
     public void SetSelectedCharacteristics(VideoCharacteristics? characteristics)
     {
+        Console.WriteLine($"Set Video Characteristics to {characteristics}");
         SelectedCharacteristics = characteristics;
 
         if (characteristics != null)
         {
-            // Save both the device name and the selected characteristics
-            var deviceInfo = new
+            var deviceInfo = new DeviceInfo
             {
                 DeviceName = SelectedDevice?.Name,
-                Characteristics = new
+                Characteristics = new VideoCharacteristicsDto
                 {
-                    characteristics.Width,
-                    characteristics.Height,
-                    characteristics.FramesPerSecond
+                    Height = characteristics.Height,
+                    Width = characteristics.Width,
+                    FramesPerSecond = characteristics.FramesPerSecond
                 }
             };
 
-            _settingsService.SetSetting(SelectedCharacteristicsSettingKey, deviceInfo);
+            _settingsService.SetJson(SelectedCharacteristicsSettingKey, deviceInfo);
         }
         else
         {
@@ -124,24 +162,18 @@ public class CaptureDeviceManager
     {
         SelectedDevice = device;
 
-        if (device != null)
-            _settingsService.SetSetting(SelectedDeviceSettingKey, device);
+        if (device != null && !string.IsNullOrWhiteSpace(device.Name))
+        {
+            Console.WriteLine($"Set Device : {device.Name}");
+            _settingsService.SetSetting(SelectedDeviceSettingKey, device.Name);
+        }
         else
+        {
+            Console.WriteLine("Clearing selected device setting.");
             _settingsService.SetSetting(SelectedDeviceSettingKey, string.Empty);
+        }
     }
 
-    // private void LoadSelectedDeviceFromSettings()
-    // {
-    //     var savedName = _settingsService.GetSetting(SelectedDeviceSettingKey, string.Empty);
-    //     if (!string.IsNullOrEmpty(savedName))
-    //     {
-    //         SelectedDevice = DeviceList.FirstOrDefault(d => d.Name == savedName);
-    //     }
-    //     else
-    //     {
-    //         SelectedDevice = DeviceList.FirstOrDefault();
-    //     }
-    // }
 
     public async Task StartCaptureAsync()
     {
@@ -157,7 +189,6 @@ public class CaptureDeviceManager
             return;
         }
 
-        // Check if the selected device is still connected
         if (!DeviceList.Contains(SelectedDevice))
         {
             Console.WriteLine($"Selected device '{SelectedDevice.Name}' is not available.");
@@ -186,7 +217,6 @@ public class CaptureDeviceManager
             _cancellationTokenSource.Dispose();
             _cancellationTokenSource = null;
 
-            // Clear the selected device and characteristics on failure
             SelectedDevice = null;
             SelectedCharacteristics = null;
             RefreshDevices();
@@ -260,44 +290,38 @@ public class CaptureDeviceManager
     }
 
     public void RefreshDevices()
+    {
+        var currentDevices = _captureDevices.EnumerateDescriptors().ToList();
+
+        // Find removed devices
+        var removedDevices = DeviceList.Where(existing => !currentDevices.Any(d => d.Name == existing.Name)).ToList();
+        foreach (var removed in removedDevices)
         {
-            var currentDevices = _captureDevices.EnumerateDescriptors().ToList();
-
-            // Remove missing devices
-            for (int i = DeviceList.Count - 1; i >= 0; i--)
-            {
-                var device = DeviceList[i];
-                if (!currentDevices.Any(d => d.Name == device.Name))
-                {
-                    Console.WriteLine($"Device '{device.Name}' removed.");
-                    DeviceList.RemoveAt(i);
-
-                    // Clear selection if the removed device was selected
-                    if (SelectedDevice == device)
-                    {
-                        SelectedDevice = null;
-                        SelectedCharacteristics = null;
-                    }
-                }
-            }
-
-            // Add new devices
-            foreach (var newDevice in currentDevices)
-            {
-                if (!DeviceList.Any(d => d.Name == newDevice.Name))
-                {
-                    Console.WriteLine($"Device '{newDevice.Name}' added.");
-                    DeviceList.Add(newDevice);
-                }
-            }
-
-            // Re-select the last known device if still available
-            if (SelectedDevice == null && DeviceList.Count > 0)
-            {
-                LoadSelectedDeviceFromSettings();
-            }
-
-            Console.WriteLine($"Device list refreshed. {DeviceList.Count} devices available.");
+            Console.WriteLine($"Device '{removed.Name}' removed.");
+            DeviceList.Remove(removed);
         }
 
+        // Find new devices
+        var newDevices = currentDevices.Where(newDevice => !DeviceList.Any(d => d.Name == newDevice.Name)).ToList();
+        foreach (var newDevice in newDevices)
+        {
+            Console.WriteLine($"Device '{newDevice.Name}' added.");
+            DeviceList.Add(newDevice);
+        }
+
+        DevicesChanged?.Invoke();
     }
+}
+
+public class DeviceInfo
+{
+    public string? DeviceName { get; init; } = string.Empty;
+    public VideoCharacteristicsDto? Characteristics { get; init; }
+}
+
+public class VideoCharacteristicsDto
+{
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public double FramesPerSecond { get; set; }
+}

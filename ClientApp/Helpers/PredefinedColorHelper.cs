@@ -6,7 +6,7 @@ namespace ClientApp.Helpers;
 
 public static class PredefinedColorHelper
 {
-    public static List<Color> GetPredefinedColors()
+    public static List<Color>? GetPredefinedColors()
     {
         return
         [

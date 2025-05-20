@@ -258,17 +258,22 @@
                     IconSource="DarkTheme">
 
                     <ui:SettingsExpander.Footer>
-                        <StackPanel Orientation="Vertical">
+                        <Grid ColumnDefinitions="Auto" RowDefinitions="*,*">
                             <ComboBox
                                 ItemsSource="{Binding DeviceList, Mode=TwoWay}"
                                 Margin="0,0,0,20"
+                                MaxWidth="300"
                                 MinWidth="300"
                                 SelectedItem="{Binding SelectedDevice, Mode=TwoWay}" />
+
                             <ComboBox
-                                ItemsSource="{Binding CharacteristicList}"
+                                Grid.Row="1"
+                                ItemsSource="{Binding CharacteristicList, Mode=TwoWay}"
+                                MaxWidth="300"
                                 MinWidth="300"
                                 SelectedItem="{Binding SelectedCharacteristics, Mode=TwoWay}" />
-                        </StackPanel>
+
+                        </Grid>
                     </ui:SettingsExpander.Footer>
 
                 </ui:SettingsExpander>

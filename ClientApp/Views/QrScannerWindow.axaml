@@ -36,31 +36,31 @@
             <TextBlock Foreground="Yellow" Text="{Binding FrameResolution}" />
             <TextBlock Foreground="Yellow" Text="{Binding QrCodeText}" />
         </StackPanel>
-        <StackPanel Margin="10" VerticalAlignment="Bottom">
-            <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
-                <ComboBox
-                    ItemsSource="{Binding DeviceList}"
-                    SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
-                    Width="200" />
-                <ComboBox
-                    ItemsSource="{Binding SelectedDevice.Characteristics}"
-                    Margin="10,0,0,0"
-                    SelectedItem="{Binding SelectedCharacteristics, Mode=TwoWay}"
-                    Width="200" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Button
-                    Command="{Binding StartCaptureCommand}"
-                    Content="Start Capture"
-                    Margin="0,0,10,0"
-                    Width="120" />
-                <Button
-                    Command="{Binding StopCaptureCommand}"
-                    Content="Stop Capture"
-                    Margin="0,0,10,0"
-                    Width="120" />
-            </StackPanel>
-        </StackPanel>
+        <!-- <StackPanel Margin="10" VerticalAlignment="Bottom"> -->
+        <!--     <StackPanel Margin="0,0,0,10" Orientation="Horizontal"> -->
+        <!--  <ComboBox  -->
+        <!--  ItemsSource="{Binding DeviceList}"  -->
+        <!--  SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"  -->
+        <!--  Width="200" />  -->
+        <!--  <ComboBox  -->
+        <!--  ItemsSource="{Binding SelectedDevice.Characteristics}"  -->
+        <!--  Margin="10,0,0,0"  -->
+        <!--  SelectedItem="{Binding SelectedCharacteristics, Mode=TwoWay}"  -->
+        <!--  Width="200" />  -->
+        <!--     </StackPanel> -->
+        <!--     <StackPanel Orientation="Horizontal"> -->
+        <!--  <Button  -->
+        <!--  Command="{Binding StartCaptureCommand}"  -->
+        <!--  Content="Start Capture"  -->
+        <!--  Margin="0,0,10,0"  -->
+        <!--  Width="120" />  -->
+        <!--  <Button  -->
+        <!--  Command="{Binding StopCaptureCommand}"  -->
+        <!--  Content="Stop Capture"  -->
+        <!--  Margin="0,0,10,0"  -->
+        <!--  Width="120" />  -->
+        <!--     </StackPanel> -->
+        <!-- </StackPanel> -->
     </Grid>
 
 </Window>

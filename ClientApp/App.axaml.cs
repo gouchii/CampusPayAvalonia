@@ -27,9 +27,9 @@ public partial class App : Application
         var preferences = services.GetService<SettingsService>();
         var themeService = services.GetService<ThemeService>();
         var deviceManager = services.GetService<CaptureDeviceManager>();
+        preferences?.LoadSettings();
         deviceManager?.LoadDevices();
         deviceManager?.LoadSelectedDeviceFromSettings();
-        preferences?.LoadSettings();
         themeService?.ApplySavedTheme();
         DisableAvaloniaDataAnnotationValidation();
 

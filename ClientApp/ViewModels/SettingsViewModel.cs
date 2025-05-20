@@ -30,7 +30,7 @@ public partial class SettingsViewModel : ViewModelBase
 
     private readonly ThemeService _themeService;
 
-    public SettingsViewModel(SettingsService settingsService, ThemeService themeService, CaptureDeviceManager deviceManager)
+    public SettingsViewModel(ThemeService themeService, CaptureDeviceManager deviceManager)
     {
         _themeService = themeService;
         _deviceManager = deviceManager;
@@ -39,14 +39,78 @@ public partial class SettingsViewModel : ViewModelBase
         CurrentAppTheme = _themeService.Theme;
         UseCustomAccent = _themeService.UseCustomAccent;
         CustomAccentColor = _themeService.Accent;
-        SelectedDevice = _deviceManager.SelectedDevice;
-        SelectedCharacteristics = _deviceManager.SelectedCharacteristics;
 
+        SelectedDevice = _deviceManager.SelectedDevice;
+
+        if (SelectedDevice != null)
+        {
+            CharacteristicList.Clear();
+            foreach (var characteristic in SelectedDevice.Characteristics)
+            {
+                CharacteristicList.Add(characteristic);
+            }
+
+            if (_deviceManager.SelectedCharacteristics != null)
+            {
+                SelectedCharacteristics = CharacteristicList.FirstOrDefault(c =>
+                    Math.Abs(c.FramesPerSecond - _deviceManager.SelectedCharacteristics.FramesPerSecond) < 0.01 &&
+                    c.Width == _deviceManager.SelectedCharacteristics.Width &&
+                    c.Height == _deviceManager.SelectedCharacteristics.Height);
+            }
+            else
+            {
+                SelectedCharacteristics = CharacteristicList.FirstOrDefault();
+            }
+        }
+        SelectedCharacteristics = _deviceManager.SelectedCharacteristics;
+        _deviceManager.DevicesChanged += OnDevicesChanged;
+        Console.WriteLine($"Selected Cam : {SelectedDevice?.Name}");
         Console.WriteLine($"Settings View Model : {CurrentAppTheme}, {UseCustomAccent}, {CustomAccentColor}");
     }
 
+
+
+    private bool _isUpdatingDevices;
+
+    private void OnDevicesChanged()
+    {
+        if (_isUpdatingDevices) return;
+
+        _isUpdatingDevices = true;
+        try
+        {
+            if (SelectedDevice != null && !_deviceManager.DeviceList.Contains(SelectedDevice))
+            {
+                Console.WriteLine($"Selected device '{SelectedDevice.Name}' is no longer available.");
+                SelectedDevice = _deviceManager.DeviceList.FirstOrDefault();
+                SelectedCharacteristics = null;
+            }
+
+            if (SelectedDevice == null || CharacteristicList.Count != 0) return;
+            CharacteristicList.Clear();
+            foreach (var characteristic in SelectedDevice.Characteristics)
+            {
+                CharacteristicList.Add(characteristic);
+            }
+
+            if (SelectedCharacteristics == null)
+            {
+                SelectedCharacteristics = CharacteristicList.FirstOrDefault();
+            }
+        }
+        finally
+        {
+            _isUpdatingDevices = false;
+        }
+    }
+
+
+
     partial void OnSelectedDeviceChanged(CaptureDeviceDescriptor? value)
     {
+        if (_deviceManager.SelectedDevice == value)
+            return;
+
         CharacteristicList.Clear();
         SelectedCharacteristics = null;
 
@@ -63,11 +127,14 @@ public partial class SettingsViewModel : ViewModelBase
 
     partial void OnSelectedCharacteristicsChanged(VideoCharacteristics? value)
     {
+        if (_deviceManager.SelectedCharacteristics != null && _deviceManager.SelectedCharacteristics.Equals(value))
+            return;
+
         _deviceManager.SetSelectedCharacteristics(value);
     }
 
 
-    public List<Color> PredefinedColors { get; private set; }
+    public List<Color>? PredefinedColors { get; private set; }
 
     public string? CurrentVersion =>
         typeof(FluentAvalonia.UI.Controls.NavigationView).Assembly.GetName().Version?.ToString();

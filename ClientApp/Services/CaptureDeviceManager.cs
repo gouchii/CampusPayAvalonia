@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -86,15 +87,16 @@ public class CaptureDeviceManager
         if (SelectedDevice == null) return;
         try
         {
-            var deviceInfo = _settingsService.GetJson<DeviceInfo>(SelectedCharacteristicsSettingKey);
+            var deviceInfo = _settingsService.GetSetting(SelectedCharacteristicsSettingKey, new DeviceInfo());
             if (deviceInfo?.Characteristics == null) return;
             var width = deviceInfo.Characteristics.Width;
             var height = deviceInfo.Characteristics.Height;
-            var fps = deviceInfo.Characteristics.FramesPerSecond;
+            var description = deviceInfo.Characteristics.Description;
             if (deviceInfo?.DeviceName == SelectedDevice.Name)
             {
+
                 SelectedCharacteristics = SelectedDevice.Characteristics
-                    .FirstOrDefault(c => c.Width == width && c.Height == height);
+                    .FirstOrDefault(c => c.Width == width && c.Height == height && c.Description == description);
 
                 Console.WriteLine($"Loaded characteristics: {SelectedCharacteristics}");
             }
@@ -145,7 +147,8 @@ public class CaptureDeviceManager
                 {
                     Height = characteristics.Height,
                     Width = characteristics.Width,
-                    FramesPerSecond = characteristics.FramesPerSecond
+                    FramesPerSecond = characteristics.FramesPerSecond,
+                    Description = characteristics.Description
                 }
             };
 
@@ -293,16 +296,19 @@ public class CaptureDeviceManager
     {
         var currentDevices = _captureDevices.EnumerateDescriptors().ToList();
 
-        // Find removed devices
-        var removedDevices = DeviceList.Where(existing => !currentDevices.Any(d => d.Name == existing.Name)).ToList();
+        var currentKeys = new HashSet<string?>(currentDevices.Select(GetKey));
+        var existingKeys = new HashSet<string?>(DeviceList.Select(GetKey));
+
+        // Remove devices no longer present
+        var removedDevices = DeviceList.Where(existing => !currentKeys.Contains(GetKey(existing))).ToList();
         foreach (var removed in removedDevices)
         {
             Console.WriteLine($"Device '{removed.Name}' removed.");
             DeviceList.Remove(removed);
         }
 
-        // Find new devices
-        var newDevices = currentDevices.Where(newDevice => !DeviceList.Any(d => d.Name == newDevice.Name)).ToList();
+        // Add new devices
+        var newDevices = currentDevices.Where(newDevice => !existingKeys.Contains(GetKey(newDevice))).ToList();
         foreach (var newDevice in newDevices)
         {
             Console.WriteLine($"Device '{newDevice.Name}' added.");
@@ -310,7 +316,12 @@ public class CaptureDeviceManager
         }
 
         DevicesChanged?.Invoke();
+        return;
+
+
+        string? GetKey(dynamic d) => d.Name?.Trim();
     }
+
 }
 
 public class DeviceInfo
@@ -324,4 +335,5 @@ public class VideoCharacteristicsDto
     public int Width { get; set; }
     public int Height { get; set; }
     public double FramesPerSecond { get; set; }
+    public string? Description { get; set; }
 }

@@ -10,7 +10,7 @@ using ZXing.SkiaSharp;
 
 namespace ClientApp.ViewModels;
 
-public partial class QrScannerWindowViewModel : ObservableObject
+public partial class QrScannerWindowViewModel : ViewModelBase
 {
     private readonly CaptureDeviceManager _deviceManager;
     private readonly WindowManagerService _windowManagerService;
@@ -91,7 +91,7 @@ public partial class QrScannerWindowViewModel : ObservableObject
                         Console.WriteLine($"QR Code detected: {result.Text}");
 
                         _ = _deviceManager.StopCaptureAsync();
-                        _windowManagerService.CloseWindow("QrWindow");
+                        _windowManagerService.CloseWindow("QrWindow", result.Text);
                     });
                 }
                 else
@@ -101,6 +101,7 @@ public partial class QrScannerWindowViewModel : ObservableObject
             });
         }
     }
+
 
     [RelayCommand]
     private async Task StopCaptureAsync()

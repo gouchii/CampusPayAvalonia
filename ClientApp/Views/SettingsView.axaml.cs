@@ -5,7 +5,9 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using ClientApp.Helpers;
 using ClientApp.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ClientApp.Views;
 

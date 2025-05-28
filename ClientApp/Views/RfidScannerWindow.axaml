@@ -1,0 +1,30 @@
+<Window
+    CanResize="False"
+    Height="480"
+    Title="RfidScannerWindow"
+    Width="640"
+    WindowStartupLocation="CenterScreen"
+    d:DesignHeight="480"
+    d:DesignWidth="640"
+    mc:Ignorable="d"
+    x:Class="ClientApp.Views.RfidScannerWindow"
+    x:DataType="viewModels:RfidScannerWindowViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:ClientApp.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <controls:FontIcon
+            FontFamily="{DynamicResource SymbolThemeFontFamily}"
+            FontSize="500"
+            Foreground="{DynamicResource SystemAccentColorDark2}"
+            Glyph="&#xE763;"
+            HorizontalAlignment="Center"
+            IsHitTestVisible="False"
+            Margin="5"
+            VerticalAlignment="Center"
+            ZIndex="1" />
+    </Grid>
+</Window>

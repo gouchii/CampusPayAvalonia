@@ -2,9 +2,12 @@ using System;
 using Avalonia;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Styling;
 using ClientApp.Services;
 using ClientApp.Views;
+using FluentAvalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClientApp;

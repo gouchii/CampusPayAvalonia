@@ -1,0 +1,66 @@
+<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="ClientApp.Views.UsernameSetView"
+    x:DataType="viewModels:UsernameSetViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:ClientApp.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
+    <Border>
+        <Grid ColumnDefinitions="*,Auto,*" RowDefinitions="*,Auto,*">
+            <Border
+                Background="{DynamicResource LayerOnAcrylicFillColorDefaultBrush}"
+                CornerRadius="30"
+                Grid.Column="1"
+                Grid.Row="1"
+                Padding="30">
+                <Grid RowDefinitions="*,Auto,*">
+
+                    <TextBox
+                        CornerRadius="10"
+                        FontSize="31"
+                        Grid.Row="1"
+                        Height="50"
+                        Margin="40"
+                        TextAlignment="Center"
+                        VerticalAlignment="Top"
+                        Watermark="Username"
+                        Width="300" />
+
+                    <Grid
+                        ColumnDefinitions="*,*"
+                        Grid.Row="2"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top">
+
+
+                        <Button
+                            Content="Cancel"
+                            CornerRadius="10"
+                            Grid.Column="0"
+                            Height="40"
+                            Margin="10,0"
+                            Width="100">
+                            <Button.Classes>accent</Button.Classes>
+                        </Button>
+
+                        <Button
+                            Content="Confirm"
+                            CornerRadius="10"
+                            Grid.Column="1"
+                            Height="40"
+                            Margin="10,0"
+                            Width="100">
+                            <Button.Classes>accent</Button.Classes>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

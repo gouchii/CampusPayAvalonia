@@ -12,14 +12,15 @@ public class HttpService
     private readonly HttpClient _httpClient;
     private readonly SettingsService _settingsService;
 
-    private string? _jwtToken;
+    public string? JwtToken { get; set; }
+    public string? RefreshToken { get; set; }
     private const string ApiBaseUrlKey = "ApiBaseUrl";
 
     public HttpService(SettingsService settingsService)
     {
         _settingsService = settingsService;
 
-        var baseUrl = _settingsService.GetSetting(ApiBaseUrlKey, "http://localhost:5000");
+        var baseUrl = _settingsService.GetSetting(ApiBaseUrlKey, "http://localhost:5019");
         _httpClient = new HttpClient
         {
             BaseAddress = new Uri(baseUrl)
@@ -35,20 +36,15 @@ public class HttpService
         _httpClient.BaseAddress = new Uri(baseUrl);
     }
 
-    public void SetJwtToken(string token)
-    {
-        _jwtToken = token;
-    }
-
     public void ClearJwtToken()
     {
-        _jwtToken = null;
+        JwtToken = null;
     }
 
     private void AttachJwtToken()
     {
-        _httpClient.DefaultRequestHeaders.Authorization = _jwtToken != null
-            ? new AuthenticationHeaderValue("Bearer", _jwtToken)
+        _httpClient.DefaultRequestHeaders.Authorization = JwtToken != null
+            ? new AuthenticationHeaderValue("Bearer", JwtToken)
             : null;
     }
 
@@ -66,8 +62,9 @@ public class HttpService
         AttachJwtToken();
         var content = CreateJsonContent(data);
         var response = await _httpClient.PostAsync(endpoint, content);
-        response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+            throw new HttpRequestException(json);
         return JsonConvert.DeserializeObject<TResponse>(json);
     }
 
@@ -107,6 +104,22 @@ public class HttpService
         var json = JsonConvert.SerializeObject(data);
         return new StringContent(json, Encoding.UTF8, "application/json");
     }
+
+    public async Task<TResponse?> PatchAsync<TRequest, TResponse>(string endpoint, TRequest data)
+    {
+        AttachJwtToken();
+        var content = CreateJsonContent(data);
+        var request = new HttpRequestMessage(new HttpMethod("PATCH"), endpoint)
+        {
+            Content = content
+        };
+        var response = await _httpClient.SendAsync(request);
+        var json = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+            throw new HttpRequestException(json);
+        return JsonConvert.DeserializeObject<TResponse>(json);
+    }
+
 
     public async Task<TResponse?> PostWithRouteAsync<TRequest, TResponse>(
         string endpointFormat, object[] routeArgs, TRequest data)
@@ -150,4 +163,5 @@ public class HttpService
         var response = await _httpClient.DeleteAsync(endpoint);
         response.EnsureSuccessStatusCode();
     }
+
 }

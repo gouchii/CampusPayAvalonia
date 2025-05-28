@@ -16,10 +16,10 @@
             IsBackButtonVisible="True"
             IsPaneOpen="False"
             IsSettingsVisible="True"
+            ItemInvoked="Menu_OnItemInvoked"
             Name="Menu"
             PaneDisplayMode="LeftCompact"
-            PaneTitle="CampusPay"
-            SelectionChanged="OnSelectedItemChanged">
+            PaneTitle="CampusPay">
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem
                     Content="Home"

@@ -1,0 +1,146 @@
+<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="ClientApp.Views.TransactionVerificationView"
+    x:DataType="viewModels:TransactionVerificationViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:converters="clr-namespace:ClientApp.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:ClientApp.ViewModels"
+    xmlns:views="clr-namespace:ClientApp.Views"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
+    <UserControl.Resources>
+        <converters:EmptyOrNullToDefaultConverter x:Key="EmptyOrNullToDefaultConverter" />
+    </UserControl.Resources>
+
+    <Border Padding="20">
+        <Grid RowDefinitions="200,Auto,Auto">
+            <TextBlock
+                FontSize="40"
+                Grid.Row="0"
+                HorizontalAlignment="Center"
+                Margin="0,0,0,20"
+                Text="Verified"
+                VerticalAlignment="Bottom" />
+
+            <!--  Transaction Display  -->
+            <Border
+                Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+                CornerRadius="30"
+                Grid.Row="1"
+                Height="250"
+                Padding="20"
+                Width="600">
+                <Grid
+                    ColumnDefinitions="250, *"
+                    Margin="10"
+                    RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                    VerticalAlignment="Center">
+
+                    <!--  Header  -->
+                    <TextBlock
+                        FontSize="30"
+                        Grid.ColumnSpan="2"
+                        Margin="0,0,0,20"
+                        Text="Details"
+                        VerticalAlignment="Bottom" />
+
+                    <!--  Sender  -->
+                    <TextBlock
+                        Grid.Column="0"
+                        Grid.Row="1"
+                        Text="Sender" />
+                    <TextBlock
+                        Grid.Column="1"
+                        Grid.Row="1"
+                        Text="{Binding VerifiedTransaction.SenderName, Converter={StaticResource EmptyOrNullToDefaultConverter}}" />
+
+                    <!--  Receiver  -->
+                    <TextBlock
+                        Grid.Column="0"
+                        Grid.Row="2"
+                        Text="Receiver" />
+                    <TextBlock
+                        Grid.Column="1"
+                        Grid.Row="2"
+                        Text="{Binding VerifiedTransaction.ReceiverName, Converter={StaticResource EmptyOrNullToDefaultConverter}}" />
+
+                    <!--  Transaction Reference  -->
+                    <TextBlock
+                        Grid.Column="0"
+                        Grid.Row="3"
+                        Text="Transaction Reference" />
+                    <TextBlock
+                        Grid.Column="1"
+                        Grid.Row="3"
+                        Text="{Binding VerifiedTransaction.TransactionRef}"
+                        TextWrapping="Wrap" />
+
+                    <!--  Created At  -->
+                    <TextBlock
+                        Grid.Column="0"
+                        Grid.Row="4"
+                        Text="Created At" />
+                    <TextBlock
+                        Grid.Column="1"
+                        Grid.Row="4"
+                        Text="{Binding VerifiedTransaction.CreatedAt, StringFormat='{}{0:dd MMM yyyy hh:mm tt}'}" />
+
+                    <!--  Divider  -->
+                    <Border
+                        Background="{DynamicResource SystemAccentColorDark2}"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Grid.Row="5"
+                        Height="2"
+                        Margin="0,10" />
+
+                    <!--  Total Amount  -->
+                    <TextBlock
+                        Grid.Column="0"
+                        Grid.Row="6"
+                        Text="Total Amount" />
+                    <TextBlock
+                        Grid.Column="1"
+                        Grid.Row="6"
+                        Text="{Binding VerifiedTransaction.Amount, StringFormat='₱ {0:F2}'}" />
+
+                </Grid>
+            </Border>
+            <Grid
+                ColumnDefinitions="*,*"
+                Grid.Row="2"
+                HorizontalAlignment="Center"
+                Margin="20"
+                VerticalAlignment="Top">
+
+
+                <Button
+                    Command="{Binding ReturnHomeCommand}"
+                    Content="Cancel"
+                    CornerRadius="20"
+                    Grid.Column="0"
+                    Height="60"
+                    Margin="30,0"
+                    Width="200">
+                    <Button.Classes>accent</Button.Classes>
+                </Button>
+
+                <Button
+                    Command="{Binding ConfirmPaymentCommand}"
+                    Content="Confirm"
+                    CornerRadius="20"
+                    Grid.Column="1"
+                    Height="60"
+                    Margin="30,0"
+                    Width="200">
+                    <Button.Classes>accent</Button.Classes>
+                </Button>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

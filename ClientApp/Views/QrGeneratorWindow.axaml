@@ -1,0 +1,41 @@
+<Window
+    CanResize="False"
+    Height="480"
+    Title="QrGeneratorWindow"
+    Width="640"
+    WindowStartupLocation="CenterScreen"
+    d:DesignHeight="480"
+    d:DesignWidth="640"
+    mc:Ignorable="d"
+    x:Class="ClientApp.Views.QrGeneratorWindow"
+    x:DataType="viewModels:QrGeneratorWindowViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:siv="https://github.com/kekyo/SkiaImageView"
+    xmlns:viewModels="clr-namespace:ClientApp.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Border
+            Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+            Height="400"
+            Width="400">
+            <siv:SKImageView
+                Height="400"
+                HorizontalAlignment="Center"
+                Margin="10"
+                Source="{Binding GeneratedQrCode}"
+                VerticalAlignment="Center"
+                Width="400" />
+        </Border>
+        <!--  <Button  -->
+        <!--  Command="{Binding GenerateQrCommand}"  -->
+        <!--  Content="Generate QR Code"  -->
+        <!--  Height="40"  -->
+        <!--  HorizontalAlignment="Right"  -->
+        <!--  VerticalAlignment="Bottom"  -->
+        <!--  Width="150"  -->
+        <!--  ZIndex="1" />  -->
+
+    </Grid>
+</Window>

@@ -4,7 +4,7 @@ using Avalonia.Controls.Templates;
 using ClientApp.ViewModels;
 
 namespace ClientApp;
-
+//testing
 public class ViewLocator : IDataTemplate
 {
     public Control? Build(object? param)
